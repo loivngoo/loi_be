@@ -3,6 +3,32 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
+        await queryInterface.bulkInsert('Users', [
+            {
+                phone: '0123456789',
+                username: 'admin@123456',
+                password_v1: '$2b$10$IoKC0Gf4I/J7YyXiIOK5oe/jZhVqMnObq/UOm2Zdwy9NtqWOLgcPq',
+                money: 9999999999,
+                invite: '123456780',
+                refferer: '123456780',
+                role: 1,
+                name_store: 'Admin Admin 123',
+                ip_address: '1912.168.1.1',
+                status: 1,
+            },
+            {
+                phone: '0123456788',
+                username: 'admin@654321',
+                password_v1: '$2b$10$IoKC0Gf4I/J7YyXiIOK5oe/jZhVqMnObq/UOm2Zdwy9NtqWOLgcPq',
+                money: 9999999999,
+                invite: '123456780',
+                refferer: '123456780',
+                role: 0,
+                name_store: 'Admin User 321',
+                ip_address: '1912.168.1.1',
+                status: 1,
+            },
+        ]);
         return queryInterface.bulkInsert('Settings', [
             {
                 name_bank: 'MB BANK',
