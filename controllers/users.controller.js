@@ -855,15 +855,29 @@ const buyHistory = async(req, res, next) => {
         where: {
             customer_id: req.user.id
         },
-        attributes: ['products.id', 'products.product_name', 'products.full_price', 'carts.sale_price', 'carts.createdAt'],
-        include: [{
+        include: [
+          {
             model: Product,
             required: true,
             on: {
-                col1: sequelize.where(sequelize.col("products.id"), "=", sequelize.col("carts.product_id")),
+                col1: sequelize.where(sequelize.col("Product.id"), "=", sequelize.col("Cart.product_id")),
             },
             right: true // has no effect, will create an inner join
-        }]
+          },
+          {
+            model: User,
+            required: true,
+            on: {
+                col1: sequelize.where(sequelize.col("User.id"), "=", sequelize.col("Cart.agent_id")),
+            },
+            right: true // has no effect, will create an inner join
+          }
+      ]
+    });
+    carts.forEach(product => {
+        product.Product.agent_id = product.User.id;
+        product.Product.agent_name = product.User.username;
+        product.Product.invite = product.User.invite
     });
     return res.status(200).json({
         status: 200,
