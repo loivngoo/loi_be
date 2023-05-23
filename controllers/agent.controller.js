@@ -105,6 +105,72 @@ const Login = async(req, res, next) => {
     }
 };
 
+const CreateEvent = async(req, res, next) => {
+  var percent = req.body.percent;
+  var customer_id = req.body.customer_id;
+  var created_at = new Date ();
+  var expried_date = new Date(created_at);
+  console.log(expried_date);
+  var listProductType = req.body.product_type;
+  expried_date.setMinutes(parseInt(created_at.getMinutes()) + parseInt(req.body.expried_date));
+  if (!percent || !created_at ||  !listProductType || !expried_date) {
+    return res.status(500).json({
+      status: 500,
+      message: "invalidate data"
+    });
+  }
+  console.log(expried_date);
+  var event = await eventSale.create({
+    percent_sale: percent,
+    created_at: created_at,
+    listProductType: listProductType,
+    expried_at: expried_date,
+    agent_id: req.user.id,
+    customer_id: customer_id
+  });
+
+  return res.status(200).json({
+    status: 200,
+    data: event
+  });
+}
+
+const ListEventOfAgent = async(req, res, next) => {
+  var eventSales = await eventSale.findAll({
+      where: {
+          agent_id: req.user.id,
+      },
+      attributes: ['*'],
+      order: [
+          ['expried_at', 'ASC']
+      ],
+      raw: true,
+  });
+
+  return res.status(200).json({
+    status: 200,
+    data: eventSales
+  });
+}
+
+const ListUserOfAgent = async(req, res, next) => {
+  var users = await User.findAll({
+      where: {
+          agent_id: req.user.id,
+      },
+      attributes: ['*'],
+      raw: true,
+  });
+
+  return res.status(200).json({
+    status: 200,
+    data: users
+  });
+}
+
 module.exports = {
   Login,
+  CreateEvent,
+  ListEventOfAgent,
+  ListUserOfAgent
 };

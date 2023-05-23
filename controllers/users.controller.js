@@ -683,7 +683,8 @@ const GetEventFromAgent = async(req, res, next) => {
                 },
                 created_at: {
                     [Op.lte]: new Date(),
-                }
+                },
+                customer_id: req.user.id
             },
             attributes: ['*'],
             order: [
@@ -714,7 +715,8 @@ const GetListProductType = async(req, res, next) => {
             },
             created_at: {
                 [Op.lte]: new Date(),
-            }
+            },
+            customer_id: req.user.id
         },
         attributes: ['*'],
         order: [
@@ -739,7 +741,8 @@ const GetProducsInType = async(req, res, next) => {
             created_at: {
                 [Op.lte]: new Date(),
             },
-            listProductType: type
+            listProductType: type,
+            customer_id: req.user.id
         },
         attributes: ['*'],
         order: [

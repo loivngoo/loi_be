@@ -19,7 +19,7 @@ const VerifyTokenAdmin = async (req, res, next) => {
                 where: {
                     phone: phone,
                 },
-                attributes: ['phone', 'role'],
+                attributes: ['phone', 'role', 'id', 'invite'],
                 raw: true,
             });
             if (!user || user?.role != 1) {
@@ -28,6 +28,7 @@ const VerifyTokenAdmin = async (req, res, next) => {
                     message: 'Phiên đăng nhập hết hạn',
                 });
             }
+            req.user = user;
             req.phone = phone;
             next();
         });

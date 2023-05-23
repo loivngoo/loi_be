@@ -11,9 +11,11 @@ module.exports = (sequelize, DataTypes) => {
         created_at: DataTypes.DATE,
         expried_at: DataTypes.DATE,
         listProductType: DataTypes.STRING,
+        customer_id: DataTypes.BIGINT
     }, {
         sequelize,
         modelName: 'eventSale',
+        timestamps: false,
     }, );
 
     return eventSale;

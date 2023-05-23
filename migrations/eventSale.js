@@ -26,6 +26,9 @@ module.exports = {
             listProductType: {
                 type: Sequelize.STRING(1000),
             },
+            customer_id: {
+              type: Sequelize.BIGINT,
+          },
         });
     },
 

@@ -1,5 +1,5 @@
 import express from 'express';
-import adminController from '../controllers/admin.controller';
+import agentController from '../controllers/agent.controller';
 import { VerifyTokenAdmin } from '../middleware';
 import GetListSupport from '../controllers/Support/GetListSupport';
 import EditSupport from '../controllers/Support/EditSupport';
@@ -11,10 +11,12 @@ import CreateEvent from '../controllers/Event/CreateEvent';
 
 const router = express.Router();
 
-const userRoute = (app) => {
-    router.post('/auth/login', adminController.Login);
-
-    return app.use('/api/agent', router);
+const agentRoute = (app) => {
+    router.post('/auth/login', agentController.Login);
+    router.post('/event/create', VerifyTokenAdmin, agentController.CreateEvent);
+    router.get('/event/list', VerifyTokenAdmin, agentController.ListEventOfAgent);
+    router.get('/users/list', VerifyTokenAdmin, agentController.ListUserOfAgent);
+    return app.use('/api/v1/agent', router);
 };
 
-export default userRoute;
+export default agentRoute;

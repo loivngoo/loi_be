@@ -11,7 +11,7 @@ import CreateEvent from '../controllers/Event/CreateEvent';
 
 const router = express.Router();
 
-const userRoute = (app) => {
+const adminRoute = (app) => {
     router.post('/auth/login', adminController.Login);
 
     router.put('/LockAccount', VerifyTokenAdmin, adminController.LockAccount);
@@ -44,4 +44,4 @@ const userRoute = (app) => {
     return app.use('/api/admin', router);
 };
 
-export default userRoute;
+export default adminRoute;
