@@ -2,12 +2,12 @@ import { User } from '../models';
 import jwt from 'jsonwebtoken';
 require('dotenv').config();
 
-const VerifyToken = async (req, res, next) => {
+const VerifyToken = async(req, res, next) => {
     let key = process.env.JWT_SECRET;
     let authorization = req.headers.authorization;
     if (authorization && authorization.split(' ')[1]) {
         let token = authorization.split(' ')[1];
-        jwt.verify(token, key, async (err, decoded) => {
+        jwt.verify(token, key, async(err, decoded) => {
             if (err) {
                 return res.status(200).json({
                     status: 4,
@@ -19,7 +19,7 @@ const VerifyToken = async (req, res, next) => {
                 where: {
                     phone: phone,
                 },
-                attributes: ['phone'],
+                attributes: ['id', 'phone', 'agent_id', 'money', 'username'],
                 raw: true,
             });
             if (!user) {
@@ -28,6 +28,7 @@ const VerifyToken = async (req, res, next) => {
                     message: 'Phiên đăng nhập hết hạn',
                 });
             }
+            req.user = user;
             req.phone = phone;
             next();
         });

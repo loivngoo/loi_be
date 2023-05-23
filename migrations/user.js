@@ -42,6 +42,10 @@ module.exports = {
                 type: Sequelize.INTEGER,
                 defaultValue: 1,
             },
+            agent_id: {
+                type: Sequelize.INTEGER,
+                defaultValue: null,
+            },
             createdAt: {
                 allowNull: true,
                 type: Sequelize.STRING(50),

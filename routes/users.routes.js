@@ -32,7 +32,11 @@ const userRoute = (app) => {
     router.post('/Message/List', GetListChat);
     // EVENT
     router.post('/Event/Detail', DetailEvent);
-
+    router.get('/event/show', VerifyToken, usersController.GetEventFromAgent);
+    router.get('/product-type', VerifyToken, usersController.GetListProductType);
+    router.get('/event/products', VerifyToken, usersController.GetProducsInType);
+    router.post('/event/products/buy', VerifyToken, usersController.BuyProduct);
+    router.get('/event/cart/history', VerifyToken, usersController.buyHistory)
     return app.use('/api/v1/users', router);
 };
 

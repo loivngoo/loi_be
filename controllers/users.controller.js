@@ -8,7 +8,10 @@ import { Bank } from '../models';
 import { Recharge } from '../models';
 import { Setting } from '../models';
 import { Withdraw } from '../models';
-
+import { eventSale } from '../models';
+import { Product } from '../models';
+import { Cart } from '../models';
+import { on } from 'nodemon';
 const sleep = (time) => {
     return new Promise((resolve) => setTimeout(resolve, time));
 };
@@ -51,7 +54,7 @@ const randomNumber = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const Login = async (req, res, next) => {
+const Login = async(req, res, next) => {
     try {
         const data = req.body;
         const schema = Joi.object({
@@ -102,7 +105,7 @@ const Login = async (req, res, next) => {
     }
 };
 
-const Register = async (req, res, next) => {
+const Register = async(req, res, next) => {
     try {
         const ip_address = req.socket.remoteAddress;
         const { password_v1, ...data } = req.body;
@@ -136,7 +139,7 @@ const Register = async (req, res, next) => {
             raw: true,
         });
 
-        if (user?.phone) {
+        if (user && user.phone) {
             return res.status(200).json({
                 status: 2,
                 message: 'Tài khoản đã tồn tại trong hệ thống',
@@ -173,7 +176,7 @@ const Register = async (req, res, next) => {
 
         const hashedPassword = await bcrypt.hash(password_v1, 10);
 
-        await User.create({ ...data, password_v1: hashedPassword, invite, ip_address });
+        await User.create({...data, password_v1: hashedPassword, invite, ip_address });
 
         let token = CreateJwt(data.phone);
 
@@ -187,7 +190,7 @@ const Register = async (req, res, next) => {
     }
 };
 
-const GetUserInfo = async (req, res, next) => {
+const GetUserInfo = async(req, res, next) => {
     const phone = req.phone;
     const data = await User.findOne({
         where: {
@@ -199,7 +202,7 @@ const GetUserInfo = async (req, res, next) => {
     return res.status(200).json(data);
 };
 
-const GetSettings = async (req, res, next) => {
+const GetSettings = async(req, res, next) => {
     const data = await Setting.findOne({
         where: {},
         attributes: ['link_support'],
@@ -208,13 +211,13 @@ const GetSettings = async (req, res, next) => {
     return res.status(200).json(data);
 };
 
-const StatusToken = async (req, res, next) => {
+const StatusToken = async(req, res, next) => {
     return res.status(200).json({
         status: 1,
     });
 };
 
-const AddBankCard = async (req, res, next) => {
+const AddBankCard = async(req, res, next) => {
     try {
         const data = req.body;
         const phone = req.phone;
@@ -256,7 +259,7 @@ const AddBankCard = async (req, res, next) => {
             raw: true,
         });
 
-        if (bank?.number_bank) {
+        if (bank && bank.number_bank) {
             if (!data.wallet_usdt) {
                 return res.status(200).json({
                     status: 2,
@@ -269,7 +272,7 @@ const AddBankCard = async (req, res, next) => {
             await Bank.create({ phone, ...data });
         }
 
-        if (data.wallet_usdt && bank?.wallet_usdt) {
+        if (data.wallet_usdt && (bank && bank.wallet_usdt)) {
             return res.status(200).json({
                 status: 2,
                 message: 'Tài khoản này đã liên kết ví USDT',
@@ -280,26 +283,20 @@ const AddBankCard = async (req, res, next) => {
             await Bank.create({ phone, ...data });
         }
 
-        if (!data.wallet_usdt && bank?.wallet_usdt) {
-            await Bank.update(
-                { ...data, wallet_usdt: bank.wallet_usdt },
-                {
-                    where: {
-                        phone: phone,
-                    },
+        if (!data.wallet_usdt && (bank && bank.wallet_usdt)) {
+            await Bank.update({...data, wallet_usdt: bank.wallet_usdt }, {
+                where: {
+                    phone: phone,
                 },
-            );
+            }, );
         }
 
-        if (data.wallet_usdt && bank?.number_bank) {
-            await Bank.update(
-                { wallet_usdt: data.wallet_usdt },
-                {
-                    where: {
-                        phone: phone,
-                    },
+        if (data.wallet_usdt && (bank && bank.number_bank)) {
+            await Bank.update({ wallet_usdt: data.wallet_usdt }, {
+                where: {
+                    phone: phone,
                 },
-            );
+            }, );
         }
 
         return res.status(200).json({
@@ -311,7 +308,7 @@ const AddBankCard = async (req, res, next) => {
     }
 };
 
-const GetBankCard = async (req, res, next) => {
+const GetBankCard = async(req, res, next) => {
     const phone = req.phone;
     const data = await Bank.findOne({
         where: {
@@ -323,7 +320,7 @@ const GetBankCard = async (req, res, next) => {
     return res.status(200).json(data);
 };
 
-const ChangePassword = async (req, res, next) => {
+const ChangePassword = async(req, res, next) => {
     try {
         const phone = req.phone;
         const data = req.body;
@@ -358,14 +355,11 @@ const ChangePassword = async (req, res, next) => {
 
         const hashedPassword = await bcrypt.hash(data.new_password, 10);
 
-        await User.update(
-            { password_v1: hashedPassword },
-            {
-                where: {
-                    phone: phone,
-                },
+        await User.update({ password_v1: hashedPassword }, {
+            where: {
+                phone: phone,
             },
-        );
+        }, );
 
         return res.status(200).json({
             status: 1,
@@ -376,7 +370,7 @@ const ChangePassword = async (req, res, next) => {
     }
 };
 
-const ChangePasswordPayment = async (req, res, next) => {
+const ChangePasswordPayment = async(req, res, next) => {
     try {
         const phone = req.phone;
         const data = req.body;
@@ -411,14 +405,11 @@ const ChangePasswordPayment = async (req, res, next) => {
 
         const hashedPassword = await bcrypt.hash(data.new_password, 10);
 
-        await User.update(
-            { password_v2: hashedPassword },
-            {
-                where: {
-                    phone: phone,
-                },
+        await User.update({ password_v2: hashedPassword }, {
+            where: {
+                phone: phone,
             },
-        );
+        }, );
 
         return res.status(200).json({
             status: 1,
@@ -429,7 +420,7 @@ const ChangePasswordPayment = async (req, res, next) => {
     }
 };
 
-const GetRechargeInfo = async (req, res, next) => {
+const GetRechargeInfo = async(req, res, next) => {
     try {
         const phone = req.phone;
         const RechargeOrder = await Recharge.findOne({
@@ -452,7 +443,7 @@ const GetRechargeInfo = async (req, res, next) => {
 
         return res.status(200).json({
             status: 1,
-            data: { ...RechargeOrder, ...InfoRecharge },
+            data: {...RechargeOrder, ...InfoRecharge },
             message: 'Nhận thành công',
         });
     } catch (error) {
@@ -460,7 +451,7 @@ const GetRechargeInfo = async (req, res, next) => {
     }
 };
 
-const RechargeMethod = async (req, res, next) => {
+const RechargeMethod = async(req, res, next) => {
     try {
         const phone = req.phone;
         const { amount } = req.body;
@@ -538,7 +529,7 @@ const RechargeMethod = async (req, res, next) => {
     }
 };
 
-const WithdrawMethod = async (req, res, next) => {
+const WithdrawMethod = async(req, res, next) => {
     try {
         const phone = req.phone;
         const { amount } = req.body;
@@ -619,33 +610,37 @@ const WithdrawMethod = async (req, res, next) => {
     }
 };
 
-const GetWithdrawRecord = async (req, res, next) => {
+const GetWithdrawRecord = async(req, res, next) => {
     const phone = req.phone;
     const data = await Withdraw.findAll({
         where: {
             phone: phone,
         },
         attributes: ['order_code', 'amount', 'status', 'createdAt'],
-        order: [['id', 'DESC']],
+        order: [
+            ['id', 'DESC']
+        ],
         raw: true,
     });
     return res.status(200).json(data);
 };
 
-const GetRechargeRecord = async (req, res, next) => {
+const GetRechargeRecord = async(req, res, next) => {
     const phone = req.phone;
     const data = await Recharge.findAll({
         where: {
             phone: phone,
         },
         attributes: ['order_code', 'amount', 'status', 'createdAt'],
-        order: [['id', 'DESC']],
+        order: [
+            ['id', 'DESC']
+        ],
         raw: true,
     });
     return res.status(200).json(data);
 };
 
-const CancelRechargeOrder = async (req, res, next) => {
+const CancelRechargeOrder = async(req, res, next) => {
     try {
         const phone = req.phone;
 
@@ -662,14 +657,11 @@ const CancelRechargeOrder = async (req, res, next) => {
             });
         }
 
-        await Recharge.update(
-            { status: 2 },
-            {
-                where: {
-                    id: RechargeOrder.id,
-                },
+        await Recharge.update({ status: 2 }, {
+            where: {
+                id: RechargeOrder.id,
             },
-        );
+        }, );
 
         return res.status(200).json({
             status: 1,
@@ -678,6 +670,205 @@ const CancelRechargeOrder = async (req, res, next) => {
     } catch (error) {
         console.log(error);
     }
+};
+
+const GetEventFromAgent = async(req, res, next) => {
+    try {
+        console.log(req.user.agent_id);
+        var eventSales = await eventSale.findAll({
+            where: {
+                agent_id: req.user.agent_id,
+                expried_at: {
+                    [Op.gt]: new Date(),
+                },
+                created_at: {
+                    [Op.lte]: new Date(),
+                }
+            },
+            attributes: ['*'],
+            order: [
+                ['expried_at', 'ASC']
+            ],
+            raw: true,
+        });
+
+        eventSales.forEach(event => {
+            event.product_type = event.product_type.split(",");
+        });
+        return res.status(200).json({
+            status: 200,
+            message: eventSales,
+            // products: products
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const GetListProductType = async(req, res, next) => {
+    var eventSales = await eventSale.findAll({
+        where: {
+            agent_id: req.user.agent_id,
+            expried_at: {
+                [Op.gt]: new Date(),
+            },
+            created_at: {
+                [Op.lte]: new Date(),
+            }
+        },
+        attributes: ['*'],
+        order: [
+            ['expried_at', 'ASC']
+        ],
+        raw: true,
+    });
+    return res.status(200).json({
+        status: 200,
+        data: eventSales
+    });
+}
+
+const GetProducsInType = async(req, res, next) => {
+    var type = req.query.type;
+    var eventSales = await eventSale.findOne({
+        where: {
+            agent_id: req.user.agent_id,
+            expried_at: {
+                [Op.gt]: new Date(),
+            },
+            created_at: {
+                [Op.lte]: new Date(),
+            },
+            listProductType: type
+        },
+        attributes: ['*'],
+        order: [
+            ['expried_at', 'ASC']
+        ],
+        raw: true,
+    });
+
+    var products = await Product.findAll({
+        where: {
+            product_type: type,
+        },
+        attributes: ['*'],
+        raw: true,
+    });
+
+    if (eventSales) {
+        products.forEach(prod => {
+            prod.sale_price = (prod.full_price * eventSales.percent_sale) / 100;
+            prod.percent_sale = eventSales.percent_sale;
+        });
+    } else {
+        products.forEach(prod => {
+            prod.sale_price = prod.full_price;
+            prod.percent_sale = 0;
+        });
+    }
+    return res.status(200).json({
+        status: 200,
+        products: products,
+        event_sale: eventSales
+    });
+}
+
+const BuyProduct = async(req, res, next) => {
+    var product_id = req.body.product_id;
+    var product_type = req.body.product_type;
+    var event_id = req.body.event_id;
+    var money = req.user.money;
+    var agent_id = req.user.agent_id;
+    var eventSales = await eventSale.findOne({
+        where: {
+            agent_id: req.user.agent_id,
+            expried_at: {
+                [Op.gt]: new Date(),
+            },
+            created_at: {
+                [Op.lte]: new Date(),
+            },
+            id: event_id,
+            listProductType: product_type
+        },
+        attributes: ['*'],
+        order: [
+            ['expried_at', 'ASC']
+        ],
+        raw: true,
+    });
+
+    if (!eventSales) {
+        return res.status(200).json({
+            status: 200,
+            message: 'Không tồn tại sự kiện sale này'
+        });
+    }
+
+    var product = await Product.findOne({
+        where: {
+            id: product_id,
+            product_type: product_type
+        },
+        attributes: ['*'],
+        raw: true
+    });
+
+    if (!product) {
+        return res.status(200).json({
+            status: 200,
+            message: 'Không tồn tại sản phẩm này'
+        });
+    }
+
+    var sale_price = (product.full_price * eventSales.percent_sale) / 100;
+    let userUpdateMoney = await User.update({ money: (req.user.money) - sale_price }, {
+        where: {
+            id: req.user.id,
+        },
+        raw: true,
+    }, )
+    if (userUpdateMoney) {
+        var cartAdd = await Cart.create({
+            product_id: product.id,
+            product_type: product.product_type,
+            full_price: product.full_price,
+            sale_price: sale_price,
+            agent_id: agent_id,
+            event_id: eventSales.id,
+            is_closed: null,
+            created_at: new Date(),
+            customer_id: req.user.id
+        });
+    }
+
+    return res.status(200).json({
+        status: 200,
+        message: "Mua thành công"
+    });
+}
+
+const buyHistory = async(req, res, next) => {
+    console.log(req.user.id);
+    var carts = await Cart.findAll({
+        where: {
+            customer_id: req.user.id
+        },
+        attributes: ['products.id', 'products.product_name', 'products.full_price', 'carts.sale_price', 'carts.createdAt'],
+        include: [{
+            model: Product,
+            required: true,
+            on: {
+                col1: sequelize.where(sequelize.col("products.id"), "=", sequelize.col("carts.product_id")),
+            },
+            right: true // has no effect, will create an inner join
+        }]
+    });
+    return res.status(200).json({
+        status: 200,
+        data: carts
+    });
 };
 
 module.exports = {
@@ -696,4 +887,9 @@ module.exports = {
     CancelRechargeOrder,
     AddBankCard,
     GetBankCard,
+    GetEventFromAgent,
+    GetListProductType,
+    GetProducsInType,
+    BuyProduct,
+    buyHistory
 };
