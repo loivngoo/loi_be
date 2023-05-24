@@ -90,6 +90,7 @@ const Login = async(req, res, next) => {
 
         let token = CreateJwt(user.phone);
 
+        addMoneyAfterEndEventSale(req, user);
         return res.status(200).json({
             status: 1,
             token: token,
@@ -965,32 +966,54 @@ const buyHistory = async(req, res, next) => {
 };
 
 const endTimeSale = async(req, res, next) => {
-    var event_id = req.body.event_id;
-    var agent_id = req.user.agent_id;
-
-    const carts = Cart.findAll({
-        where: {
-            customer_id: req.user.id,
-            is_closed: null
-        },
-        raw: true,
-        attributes: ['*']
-    });
-
-    var money = 0;
-    carts.forEach(product => {
-        if (product.full_price) {
-            money += product.full_price;
-        }
-    });
-
+    addMoneyAfterEndEventSale(req);
     return res.status(200).json({
         status: 200,
         data: "done"
     });
-
 }
 
+const addMoneyAfterEndEventSale = async(req, user) => {
+  var userId = (req.user) ? req.user.id : user.id;
+  var userMoney = (req.user) ? req.user.money : user.money;
+  const carts = await Cart.findAll({
+    where: {
+        customer_id: userId,
+        is_closed: null
+    },
+    raw: true,
+    attributes: ['*']
+});
+var addMoney = 0;
+if (carts.length > 0) {
+  carts.forEach(product => {
+    if (product.full_price) {
+        addMoney += product.full_price;
+        Cart.update(
+          {
+            is_closed: 1
+          },
+          {
+            where: {
+              id: product.id,
+              is_closed: null,
+              customer_id: userId
+            }
+          }
+        );
+    }
+  });
+
+  User.update(    
+    {
+      money: userMoney + addMoney
+    },
+    {
+      where: { id: userId }
+    }
+  );
+}
+}
 
 module.exports = {
     Register,
