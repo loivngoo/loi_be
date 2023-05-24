@@ -13,6 +13,7 @@ import { Product } from '../models';
 import { Cart } from '../models';
 import { on } from 'nodemon';
 import { agentRecharge } from '../models';
+import { agentWithdraw } from '../models';
 const sleep = (time) => {
     return new Promise((resolve) => setTimeout(resolve, time));
 };
@@ -559,7 +560,7 @@ const WithdrawMethod = async(req, res, next) => {
             raw: true,
         });
 
-        const WithdrawOrder = await Withdraw.findAll({
+        const WithdrawOrder = await agentWithdraw.findAll({
             where: { phone: phone, status: 0 },
             attributes: ['id'],
             raw: true,
@@ -596,7 +597,7 @@ const WithdrawMethod = async(req, res, next) => {
 
         let order_code = timerJoin() + randomStr(11).toUpperCase();
 
-        await Withdraw.create({ phone, amount, order_code, status: 0, ...cardInfo });
+        await agentWithdraw.create({ phone, amount, order_code, status: 0, ...cardInfo });
 
         return res.status(200).json({
             status: 1,
@@ -609,7 +610,7 @@ const WithdrawMethod = async(req, res, next) => {
 
 const GetWithdrawRecord = async(req, res, next) => {
     const phone = req.phone;
-    const data = await Withdraw.findAll({
+    const data = await agentWithdraw.findAll({
         where: {
             phone: phone,
         },
@@ -641,7 +642,7 @@ const CancelRechargeOrder = async(req, res, next) => {
     try {
         const phone = req.phone;
 
-        const RechargeOrder = await Recharge.findOne({
+        const RechargeOrder = await agentRecharge.findOne({
             where: { phone: phone, status: 0 },
             attributes: ['id'],
             raw: true,
@@ -654,7 +655,7 @@ const CancelRechargeOrder = async(req, res, next) => {
             });
         }
 
-        await Recharge.update({ status: 2 }, {
+        await agentRecharge.update({ status: 2 }, {
             where: {
                 id: RechargeOrder.id,
             },

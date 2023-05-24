@@ -13,6 +13,7 @@ import { Product } from '../models';
 import { Cart } from '../models';
 import { on } from 'nodemon';
 import { agentRecharge } from '../models';
+import { agentWithdraw } from '../models';
 const sleep = (time) => {
     return new Promise((resolve) => setTimeout(resolve, time));
 };
@@ -319,6 +320,54 @@ const agentGetRecharge = async(req, res, next) => {
     }
 };
 
+const agentConfirmWithdraw = async(req, res, next) => {
+  try {
+      const { order_code, status } = req.body;
+
+      const withdrawlInfo = await agentWithdraw.findOne({
+          where: {
+              order_code: order_code,
+          },
+          attributes: ['phone', 'amount'],
+          raw: true,
+      });
+
+      await agentWithdraw.update(
+          {
+              status: status,
+          },
+          {
+              where: {
+                  order_code: order_code,
+              },
+              raw: true,
+          },
+      );
+
+      await Withdraw.create({ phone, amount, order_code, status: 0, ...cardInfo });
+
+      return res.status(200).json({
+          status: 1,
+          message: 'Cập nhật đơn rút thành công',
+      });
+  } catch (error) {
+      console.log(error);
+  }
+}
+
+const agentGetWithdraw = async(req, res, next) => {
+  try {
+      const data = await agentWithdraw.findAll({ raw: true, order: [['id', 'DESC']] });
+
+      return res.status(200).json({
+          status: 1,
+          data: data,
+          message: 'Nhận thành công',
+      });
+  } catch (error) {
+      console.log(error);
+  }
+}
 module.exports = {
     Login,
     CreateEvent,
@@ -327,5 +376,7 @@ module.exports = {
     AgentCreateCustomerAccount,
     Status,
     agentConfirmRecharge,
-    agentGetRecharge
+    agentGetRecharge,
+    agentConfirmWithdraw,
+    agentGetWithdraw
 };

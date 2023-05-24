@@ -22,6 +22,9 @@ const agentRoute = (app) => {
     router.get('/users/list', VerifyTokenAgent, agentController.ListUserOfAgent);
     router.put('/agent/ConfirmRecharge', VerifyTokenAgent, agentController.agentConfirmRecharge);
     router.get('/agent/GetRecharge', VerifyTokenAgent, agentController.agentGetRecharge);
+
+    router.put('/agent/ConfirmWithdraw', VerifyTokenAgent, agentController.agentConfirmWithdraw);
+    router.get('/agent/GetWithdraw', VerifyTokenAgent, agentController.agentGetWithdraw);
     return app.use('/api/v1/agent', router);
 };
 
