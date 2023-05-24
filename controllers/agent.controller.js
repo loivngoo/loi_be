@@ -326,5 +326,6 @@ module.exports = {
     ListUserOfAgent,
     AgentCreateCustomerAccount,
     Status,
-    agentConfirmRecharge
+    agentConfirmRecharge,
+    agentGetRecharge
 };
