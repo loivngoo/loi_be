@@ -20,7 +20,7 @@ const userRoute = (app) => {
     router.put('/change-password-payment', VerifyToken, usersController.ChangePasswordPayment);
     router.put('/CancelRechargeOrder', VerifyToken, usersController.CancelRechargeOrder);
 
-    router.get('/GetBankCard', usersController.GetBankCard);
+    router.get('/GetBankCard', VerifyToken, usersController.GetBankCard);
     router.get('/GetRechargeInfo', VerifyToken, usersController.GetRechargeInfo);
     router.get('/GetUserInfo', VerifyToken, usersController.GetUserInfo);
     router.get('/GetWithdrawRecord', VerifyToken, usersController.GetWithdrawRecord);
