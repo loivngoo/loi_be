@@ -176,7 +176,7 @@ const Register = async(req, res, next) => {
 
         const hashedPassword = await bcrypt.hash(password_v1, 10);
 
-        await User.create({...data, password_v1: hashedPassword, invite, ip_address });
+        await User.create({...data, password_v1: hashedPassword, invite, ip_address, agent_id: refferer.id });
 
         let token = CreateJwt(data.phone);
 
@@ -678,7 +678,7 @@ const GetEventFromAgent = async(req, res, next) => {
         var eventSales = await eventSale.findAll({
             where: {
                 agent_id: req.user.agent_id,
-                expried_at: {
+                expired_at: {
                     [Op.gt]: new Date(),
                 },
                 created_at: {
@@ -688,7 +688,7 @@ const GetEventFromAgent = async(req, res, next) => {
             },
             attributes: ['*'],
             order: [
-                ['expried_at', 'ASC']
+                ['expired_at', 'ASC']
             ],
             raw: true,
         });
@@ -710,7 +710,7 @@ const GetListProductType = async(req, res, next) => {
     var eventSales = await eventSale.findAll({
         where: {
             agent_id: req.user.agent_id,
-            expried_at: {
+            expired_at: {
                 [Op.gt]: new Date(),
             },
             created_at: {
@@ -720,7 +720,7 @@ const GetListProductType = async(req, res, next) => {
         },
         attributes: ['*'],
         order: [
-            ['expried_at', 'ASC']
+            ['expired_at', 'ASC']
         ],
         raw: true,
     });
@@ -735,7 +735,7 @@ const GetProducsInType = async(req, res, next) => {
     var eventSales = await eventSale.findOne({
         where: {
             agent_id: req.user.agent_id,
-            expried_at: {
+            expired_at: {
                 [Op.gt]: new Date(),
             },
             created_at: {
@@ -746,7 +746,7 @@ const GetProducsInType = async(req, res, next) => {
         },
         attributes: ['*'],
         order: [
-            ['expried_at', 'ASC']
+            ['expired_at', 'ASC']
         ],
         raw: true,
     });
@@ -786,7 +786,7 @@ const BuyProduct = async(req, res, next) => {
     var eventSales = await eventSale.findOne({
         where: {
             agent_id: req.user.agent_id,
-            expried_at: {
+            expired_at: {
                 [Op.gt]: new Date(),
             },
             created_at: {
@@ -797,16 +797,15 @@ const BuyProduct = async(req, res, next) => {
         },
         attributes: ['*'],
         order: [
-            ['expried_at', 'ASC']
+            ['expired_at', 'ASC']
         ],
         raw: true,
     });
 
     if (!eventSales) {
-        return res.status(200).json({
-            status: 200,
-            message: 'Không tồn tại sự kiện sale này'
-        });
+        var sale_price = product.full_price; //(product.full_price * eventSales.percent_sale) / 100;
+    } else {
+        var sale_price = (product.full_price * eventSales.percent_sale) / 100;
     }
 
     var product = await Product.findOne({
@@ -824,8 +823,6 @@ const BuyProduct = async(req, res, next) => {
             message: 'Không tồn tại sản phẩm này'
         });
     }
-
-    var sale_price = (product.full_price * eventSales.percent_sale) / 100;
     let userUpdateMoney = await User.update({ money: (req.user.money) - sale_price }, {
         where: {
             id: req.user.id,
@@ -839,7 +836,7 @@ const BuyProduct = async(req, res, next) => {
             full_price: product.full_price,
             sale_price: sale_price,
             agent_id: agent_id,
-            event_id: eventSales.id,
+            event_id: (eventSales) ? eventSales.id : null,
             is_closed: null,
             created_at: new Date(),
             customer_id: req.user.id
@@ -858,24 +855,23 @@ const buyHistory = async(req, res, next) => {
         where: {
             customer_id: req.user.id
         },
-        include: [
-          {
-            model: Product,
-            required: true,
-            on: {
-                col1: sequelize.where(sequelize.col("Product.id"), "=", sequelize.col("Cart.product_id")),
+        include: [{
+                model: Product,
+                required: true,
+                on: {
+                    col1: sequelize.where(sequelize.col("Product.id"), "=", sequelize.col("Cart.product_id")),
+                },
+                right: true // has no effect, will create an inner join
             },
-            right: true // has no effect, will create an inner join
-          },
-          {
-            model: User,
-            required: true,
-            on: {
-                col1: sequelize.where(sequelize.col("User.id"), "=", sequelize.col("Cart.agent_id")),
-            },
-            right: true // has no effect, will create an inner join
-          }
-      ]
+            {
+                model: User,
+                required: true,
+                on: {
+                    col1: sequelize.where(sequelize.col("User.id"), "=", sequelize.col("Cart.agent_id")),
+                },
+                right: true // has no effect, will create an inner join
+            }
+        ]
     });
     carts.forEach(product => {
         product.Product.agent_id = product.User.id;
@@ -887,6 +883,7 @@ const buyHistory = async(req, res, next) => {
         data: carts
     });
 };
+
 
 module.exports = {
     Register,
@@ -908,5 +905,5 @@ module.exports = {
     GetListProductType,
     GetProducsInType,
     BuyProduct,
-    buyHistory
+    buyHistory,
 };

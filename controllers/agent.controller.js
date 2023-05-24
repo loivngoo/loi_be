@@ -106,71 +106,157 @@ const Login = async(req, res, next) => {
 };
 
 const CreateEvent = async(req, res, next) => {
-  var percent = req.body.percent;
-  var customer_id = req.body.customer_id;
-  var created_at = new Date ();
-  var expried_date = new Date(created_at);
-  console.log(expried_date);
-  var listProductType = req.body.product_type;
-  expried_date.setMinutes(parseInt(created_at.getMinutes()) + parseInt(req.body.expried_date));
-  if (!percent || !created_at ||  !listProductType || !expried_date) {
-    return res.status(500).json({
-      status: 500,
-      message: "invalidate data"
+    var percent = req.body.percent;
+    var customer_id = req.body.customer_id;
+    var created_at = new Date();
+    var expired_date = new Date(created_at);
+    console.log(expired_date);
+    var listProductType = req.body.product_type;
+    expired_date.setMinutes(parseInt(created_at.getMinutes()) + parseInt(req.body.expired_date));
+    if (!percent || !created_at || !listProductType || !expired_date) {
+        return res.status(500).json({
+            status: 500,
+            message: "invalidate data"
+        });
+    }
+    console.log(expired_date);
+    var event = await eventSale.create({
+        percent_sale: percent,
+        created_at: created_at,
+        listProductType: listProductType,
+        expired_at: expired_date,
+        agent_id: req.user.id,
+        customer_id: customer_id
     });
-  }
-  console.log(expried_date);
-  var event = await eventSale.create({
-    percent_sale: percent,
-    created_at: created_at,
-    listProductType: listProductType,
-    expried_at: expried_date,
-    agent_id: req.user.id,
-    customer_id: customer_id
-  });
 
-  return res.status(200).json({
-    status: 200,
-    data: event
-  });
+    return res.status(200).json({
+        status: 200,
+        data: event
+    });
 }
 
 const ListEventOfAgent = async(req, res, next) => {
-  var eventSales = await eventSale.findAll({
-      where: {
-          agent_id: req.user.id,
-      },
-      attributes: ['*'],
-      order: [
-          ['expried_at', 'ASC']
-      ],
-      raw: true,
-  });
+    var eventSales = await eventSale.findAll({
+        where: {
+            agent_id: req.user.id,
+        },
+        attributes: ['*'],
+        order: [
+            ['expired_at', 'ASC']
+        ],
+        raw: true,
+    });
 
-  return res.status(200).json({
-    status: 200,
-    data: eventSales
-  });
+    return res.status(200).json({
+        status: 200,
+        data: eventSales
+    });
 }
 
 const ListUserOfAgent = async(req, res, next) => {
-  var users = await User.findAll({
-      where: {
-          agent_id: req.user.id,
-      },
-      attributes: ['*'],
-      raw: true,
-  });
+    var users = await User.findAll({
+        where: {
+            agent_id: req.user.id,
+        },
+        attributes: ['*'],
+        raw: true,
+    });
 
-  return res.status(200).json({
-    status: 200,
-    data: users
-  });
+    return res.status(200).json({
+        status: 200,
+        data: users
+    });
+}
+
+const AgentCreateCustomerAccount = async(req, res, nesxt) => {
+    try {
+        const ip_address = req.socket.remoteAddress;
+        const { password_v1, ...data } = req.body;
+
+        const schema = Joi.object({
+            phone: Joi.string().min(10).max(20).required(),
+            username: Joi.string().min(10).max(50).required(),
+            name_store: Joi.string().min(5).max(150).required(),
+            refferer: Joi.string().required(),
+            password_v1: Joi.string().required(),
+        });
+
+        const { error } = schema.validate(req.body);
+
+        if (error) {
+            return res.status(200).json({
+                status: 2,
+                message: error.details[0].message,
+            });
+        }
+
+        const user = await User.findOne({
+            where: { phone: data.phone },
+            attributes: ['phone'],
+            raw: true,
+        });
+
+        const refferer = await User.findOne({
+            where: { invite: data.refferer },
+            attributes: ['phone'],
+            raw: true,
+        });
+
+        if (user && user.phone) {
+            return res.status(200).json({
+                status: 2,
+                message: 'Tài khoản đã tồn tại trong hệ thống',
+            });
+        }
+
+        if (!refferer) {
+            return res.status(200).json({
+                status: 2,
+                message: 'Mã mời không tồn tại',
+            });
+        }
+
+        let result = '';
+        let result2 = '';
+        let result3 = '';
+        let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let characters2 = '0123456789';
+        let charactersLength = characters.length;
+        let charactersLength2 = characters2.length;
+        for (let i = 0; i < 2; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+
+        for (let i = 0; i < 2; i++) {
+            result2 += characters2.charAt(Math.floor(Math.random() * charactersLength2));
+        }
+
+        for (let i = 0; i < 1; i++) {
+            result3 += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+
+        const invite = result + result2 + result3;
+
+        const hashedPassword = await bcrypt.hash(password_v1, 10);
+
+        await User.create({...data, password_v1: hashedPassword, invite, ip_address, agent_id: refferer.id });
+
+        let token = CreateJwt(data.phone);
+
+        return res.status(200).json({
+            status: 1,
+            token: token,
+            message: 'Đăng ký thành công',
+        });
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 module.exports = {
-  Login,
-  CreateEvent,
-  ListEventOfAgent,
-  ListUserOfAgent
+    Login,
+    CreateEvent,
+    ListEventOfAgent,
+    ListUserOfAgent,
+    AgentCreateCustomerAccount
 };

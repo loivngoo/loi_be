@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         agent_id: DataTypes.BIGINT,
         percent_sale: DataTypes.INTEGER,
         created_at: DataTypes.DATE,
-        expried_at: DataTypes.DATE,
+        expired_at: DataTypes.DATE,
         listProductType: DataTypes.STRING,
         customer_id: DataTypes.BIGINT
     }, {

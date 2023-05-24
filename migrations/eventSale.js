@@ -20,15 +20,15 @@ module.exports = {
             created_at: {
                 type: Sequelize.DATE,
             },
-            expried_at: {
+            expired_at: {
                 type: Sequelize.DATE,
             },
             listProductType: {
                 type: Sequelize.STRING(1000),
             },
             customer_id: {
-              type: Sequelize.BIGINT,
-          },
+                type: Sequelize.BIGINT,
+            },
         });
     },
 
