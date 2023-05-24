@@ -12,6 +12,7 @@ import { eventSale } from '../models';
 import { Product } from '../models';
 import { Cart } from '../models';
 import { on } from 'nodemon';
+import { Recharge } from '../models';
 const sleep = (time) => {
     return new Promise((resolve) => setTimeout(resolve, time));
 };
@@ -264,11 +265,48 @@ const Status = async(req, res, next) => {
     }
 };
 
+const agentConfirmRecharge = async(req, res, next) => {
+    try {
+        const { order_code, status } = req.body;
+
+        const rechargeInfo = await agentRecharge.findOne({
+            where: {
+                order_code: order_code,
+            },
+            attributes: ['phone', 'amount'],
+            raw: true,
+        });
+
+        await agentRecharge.update({
+            status: status,
+        }, {
+            where: {
+                order_code: order_code,
+            },
+            raw: true,
+        }, );
+
+        if (status == 1 && rechargeInfo) {
+            var phone = rechargeInfo.phone;
+            var amount = rechargeInfo.amount;
+            await Recharge.create({ phone, amount, order_code, status: 0 });
+        }
+
+        return res.status(200).json({
+            status: 1,
+            message: 'chuyển trạng thái thành công',
+        });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 module.exports = {
     Login,
     CreateEvent,
     ListEventOfAgent,
     ListUserOfAgent,
     AgentCreateCustomerAccount,
-    Status
+    Status,
+    agentConfirmRecharge
 };

@@ -12,6 +12,7 @@ import { eventSale } from '../models';
 import { Product } from '../models';
 import { Cart } from '../models';
 import { on } from 'nodemon';
+import { agentRecharge } from '../models';
 const sleep = (time) => {
     return new Promise((resolve) => setTimeout(resolve, time));
 };
@@ -478,7 +479,7 @@ const RechargeMethod = async(req, res, next) => {
             });
         }
 
-        const RechargeOrder = await Recharge.findAll({
+        const RechargeOrder = await agentRecharge.findAll({
             where: { phone: phone, status: 0 },
             attributes: ['id'],
             raw: true,
@@ -488,7 +489,7 @@ const RechargeMethod = async(req, res, next) => {
         const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
 
-        const RechargeOrderToday = await Recharge.findAll({
+        const RechargeOrderToday = await agentRecharge.findAll({
             where: {
                 phone: phone,
                 createdAt: {
@@ -518,7 +519,7 @@ const RechargeMethod = async(req, res, next) => {
 
         let order_code = timerJoin() + randomStr(11).toUpperCase();
 
-        await Recharge.create({ phone, amount, order_code, status: 0 });
+        await agentRecharge.create({ phone, amount, order_code, status: 0 });
 
         return res.status(200).json({
             status: 1,

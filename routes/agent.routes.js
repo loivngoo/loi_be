@@ -18,6 +18,10 @@ const agentRoute = (app) => {
     router.get('/status', VerifyToken, agentController.Status);
     router.post('/auth/register-customer', agentController.AgentCreateCustomerAccount);
     router.get('/users/list', VerifyToken, agentController.ListUserOfAgent);
+
+    router.get('/users/list', VerifyToken, agentController.ListUserOfAgent);
+    router.put('/agent/ConfirmRecharge', VerifyTokenAdmin, adminController.agentConfirmRecharge);
+
     return app.use('/api/v1/agent', router);
 };
 
