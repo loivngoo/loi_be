@@ -703,32 +703,9 @@ const GetEventFromAgent = async(req, res, next) => {
 }
 
 const GetListProductType = async(req, res, next) => {
-    var eventSales = await eventSale.findAll({
-        where: {
-            // agent_id: req.user.agent_id,
-            // expired_at: {
-            //     [Op.gt]: new Date(),
-            // },
-            // created_at: {
-            //     [Op.lte]: new Date(),
-            // },
-            // customer_id: req.user.id
-        },
-        attributes: ['*'],
-        order: [
-            ['expired_at', 'ASC']
-        ],
-        raw: true,
-    });
-    return res.status(200).json({
-        status: 200,
-        data: eventSales
-    });
-}
-
-const GetProducsInType = async(req, res, next) => {
-    var type = req.query.type;
-    var eventSales = await eventSale.findOne({
+  var eventSales = [];
+  if (req.user?.agent_id) {
+    eventSales = await eventSale.findAll({
         where: {
             agent_id: req.user.agent_id,
             expired_at: {
@@ -737,7 +714,6 @@ const GetProducsInType = async(req, res, next) => {
             created_at: {
                 [Op.lte]: new Date(),
             },
-            listProductType: type,
             customer_id: req.user.id
         },
         attributes: ['*'],
@@ -746,31 +722,131 @@ const GetProducsInType = async(req, res, next) => {
         ],
         raw: true,
     });
+  }
 
-    var products = await Product.findAll({
-        where: {
-            product_type: type,
-        },
-        attributes: ['*'],
-        raw: true,
-    });
-
-    if (eventSales) {
-        products.forEach(prod => {
-            prod.sale_price = (prod.full_price * eventSales.percent_sale) / 100;
-            prod.percent_sale = eventSales.percent_sale;
-        });
-    } else {
-        products.forEach(prod => {
-            prod.sale_price = prod.full_price;
-            prod.percent_sale = 0;
+    var listType = [
+      {
+        "id": null,
+        "agent_id": null,
+        "created_at": null,
+        "expried_at": null,
+        "listProductType": "1",
+        "percent_sale": 0,
+        "customer_id": null
+      },
+      {
+        "id": null,
+        "agent_id": null,
+        "created_at": null,
+        "expried_at": null,
+        "listProductType": "2",
+        "percent_sale": 0,
+        "customer_id": null
+      },
+      {
+        "id": null,
+        "agent_id": null,
+        "created_at": null,
+        "expried_at": null,
+        "listProductType": "3",
+        "percent_sale": 0,
+        "customer_id": null
+      },
+      {
+        "id": null,
+        "agent_id": null,
+        "created_at": null,
+        "expried_at": null,
+        "listProductType": "4",
+        "percent_sale": 0,
+        "customer_id": null
+      }
+    ];
+    if (eventSales.length > 0) {
+        eventSales.forEach(event => {
+            if (event.listProductType) {
+              if (listType[parseInt(event.listProductType) - 1]) {
+                listType[parseInt(event.listProductType) - 1].id = event.id;
+                listType[parseInt(event.listProductType) - 1].agent_id = event.agent_id;
+                listType[parseInt(event.listProductType) - 1].created_at = event.created_at;
+                listType[parseInt(event.listProductType) - 1].expried_at = event.expried_at;
+                listType[parseInt(event.listProductType) - 1].percent_sale = event.agent_id;
+                listType[parseInt(event.listProductType) - 1].customer_id = parseInt(event.customer_id);
+              }
+            }
         });
     }
     return res.status(200).json({
         status: 200,
-        products: products,
-        event_sale: eventSales
+        data: listType
     });
+}
+
+const GetProducsInType = async(req, res, next) => {
+    var type = req.query.type;
+    if (req.user) {
+      var eventSales = await eventSale.findOne({
+          where: {
+              agent_id: req.user.agent_id,
+              expired_at: {
+                  [Op.gt]: new Date(),
+              },
+              created_at: {
+                  [Op.lte]: new Date(),
+              },
+              listProductType: type,
+              customer_id: req.user.id
+          },
+          attributes: ['*'],
+          order: [
+              ['expired_at', 'ASC']
+          ],
+          raw: true,
+      });
+
+      var products = await Product.findAll({
+          where: {
+              product_type: type,
+          },
+          attributes: ['*'],
+          raw: true,
+      });
+
+      if (eventSales) {
+          products.forEach(prod => {
+              prod.sale_price = (prod.full_price * eventSales.percent_sale) / 100;
+              prod.percent_sale = eventSales.percent_sale;
+          });
+      } else {
+          products.forEach(prod => {
+              prod.sale_price = prod.full_price;
+              prod.percent_sale = 0;
+          });
+      }
+      return res.status(200).json({
+          status: 200,
+          products: products,
+          event_sale: eventSales
+      });
+    } else {
+       var products = await Product.findAll({
+          where: {
+              product_type: type,
+          },
+          attributes: ['*'],
+          raw: true,
+        });
+        products.forEach(prod => {
+            prod.sale_price = prod.full_price;
+            prod.percent_sale = 0;
+        });
+
+        return res.status(200).json({
+          status: 200,
+          products: products,
+          event_sale: []
+      });
+    }
 }
 
 const BuyProduct = async(req, res, next) => {
