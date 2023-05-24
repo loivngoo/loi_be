@@ -7,6 +7,7 @@ const VerifyTokenCustomer = async (req, res, next) => {
     let authorization = req.headers.authorization;
     if (authorization && authorization.split(' ')[1]) {
         let token = authorization.split(' ')[1];
+
         jwt.verify(token, key, async (err, decoded) => {
             if (err) {
                 return res.status(200).json({
@@ -19,7 +20,7 @@ const VerifyTokenCustomer = async (req, res, next) => {
                 where: {
                     phone: phone,
                 },
-                attributes: ['id', 'phone', 'agent_id', 'money', 'username'],
+                attributes: ['id', 'phone', 'agent_id', 'money', 'username', 'role'],
                 raw: true,
             });
             if ((!user || user.role != 1)) {

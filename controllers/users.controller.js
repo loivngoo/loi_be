@@ -77,16 +77,11 @@ const Login = async(req, res, next) => {
             raw: true,
         });
 
-        if (!user) {
-            return res.status(200).json({
-                status: 2,
-                message: 'Tài khoản hoặc mật khẩu không chính xác',
-            });
-        }
+      
 
         const isMatch = await bcrypt.compare(data.password_v1, user.password_v1);
 
-        if (!isMatch) {
+        if (!isMatch || user.role !== 1) {
             return res.status(200).json({
                 status: 2,
                 message: 'Tài khoản hoặc mật khẩu không chính xác',
@@ -710,14 +705,14 @@ const GetEventFromAgent = async(req, res, next) => {
 const GetListProductType = async(req, res, next) => {
     var eventSales = await eventSale.findAll({
         where: {
-            agent_id: req.user.agent_id,
-            expired_at: {
-                [Op.gt]: new Date(),
-            },
-            created_at: {
-                [Op.lte]: new Date(),
-            },
-            customer_id: req.user.id
+            // agent_id: req.user.agent_id,
+            // expired_at: {
+            //     [Op.gt]: new Date(),
+            // },
+            // created_at: {
+            //     [Op.lte]: new Date(),
+            // },
+            // customer_id: req.user.id
         },
         attributes: ['*'],
         order: [
@@ -803,12 +798,7 @@ const BuyProduct = async(req, res, next) => {
         raw: true,
     });
 
-    if (!eventSales) {
-        var sale_price = product.full_price; //(product.full_price * eventSales.percent_sale) / 100;
-    } else {
-        var sale_price = (product.full_price * eventSales.percent_sale) / 100;
-    }
-
+  
     var product = await Product.findOne({
         where: {
             id: product_id,
@@ -817,6 +807,13 @@ const BuyProduct = async(req, res, next) => {
         attributes: ['*'],
         raw: true
     });
+
+    if (!eventSales) {
+        var sale_price = product.full_price; //(product.full_price * eventSales.percent_sale) / 100;
+    } else {
+        var sale_price = (product.full_price * eventSales.percent_sale) / 100;
+    }
+
 
     if (!product) {
         return res.status(200).json({

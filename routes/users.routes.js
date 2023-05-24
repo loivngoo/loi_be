@@ -33,7 +33,7 @@ const userRoute = (app) => {
     // EVENT
     router.post('/Event/Detail', DetailEvent);
     router.get('/event/show', VerifyTokenCustomer, usersController.GetEventFromAgent);
-    router.get('/product-type', VerifyTokenCustomer, usersController.GetListProductType);
+    router.get('/product-type', usersController.GetListProductType);
     router.get('/event/products', VerifyTokenCustomer, usersController.GetProducsInType);
     router.post('/event/products/buy', VerifyTokenCustomer, usersController.BuyProduct);
     router.get('/event/cart/history', VerifyTokenCustomer, usersController.buyHistory)

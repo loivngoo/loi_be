@@ -76,6 +76,8 @@ const Login = async (req, res, next) => {
             raw: true,
         });
 
+        console.log(user);
+
         if (!user) {
             return res.status(200).json({
                 status: 2,
@@ -85,7 +87,7 @@ const Login = async (req, res, next) => {
 
         const isMatch = await bcrypt.compare(data.password_v1, user.password_v1);
 
-        if (!isMatch || user.role !== 1) {
+        if (!isMatch || user.role !== 0) {
             return res.status(200).json({
                 status: 2,
                 message: 'Tài khoản hoặc mật khẩu không chính xác',
