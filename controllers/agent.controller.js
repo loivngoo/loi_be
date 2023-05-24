@@ -253,10 +253,22 @@ const AgentCreateCustomerAccount = async(req, res, nesxt) => {
     }
 }
 
+const Status = async(req, res, next) => {
+    try {
+        return res.status(200).json({
+            status: 1,
+            message: 'Nhận thành công',
+        });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 module.exports = {
     Login,
     CreateEvent,
     ListEventOfAgent,
     ListUserOfAgent,
-    AgentCreateCustomerAccount
+    AgentCreateCustomerAccount,
+    Status
 };
