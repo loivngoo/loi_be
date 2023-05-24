@@ -424,7 +424,7 @@ const ChangePasswordPayment = async(req, res, next) => {
 const GetRechargeInfo = async(req, res, next) => {
     try {
         const phone = req.phone;
-        const RechargeOrder = await Recharge.findOne({
+        const RechargeOrder = await agentRecharge.findOne({
             where: { phone: phone, status: 0 },
             attributes: ['order_code', 'amount', 'status', 'createdAt'],
             raw: true,

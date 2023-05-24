@@ -301,6 +301,24 @@ const agentConfirmRecharge = async(req, res, next) => {
     }
 };
 
+const agentGetRecharge = async(req, res, next) => {
+    try {
+        const data = await agentRecharge.findAll({
+            raw: true,
+            order: [
+                ['id', 'DESC']
+            ]
+        });
+        return res.status(200).json({
+            status: 1,
+            data: data,
+            message: 'Nhận thành công',
+        });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 module.exports = {
     Login,
     CreateEvent,
