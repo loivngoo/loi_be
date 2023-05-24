@@ -824,6 +824,12 @@ const BuyProduct = async(req, res, next) => {
             message: 'Không tồn tại sản phẩm này'
         });
     }
+    if (req.user.money < sale_price) {
+        return res.status(200).json({
+            status: 200,
+            message: 'Không đủ tiền'
+        });
+    }
     let userUpdateMoney = await User.update({ money: (req.user.money) - sale_price }, {
         where: {
             id: req.user.id,
@@ -885,6 +891,33 @@ const buyHistory = async(req, res, next) => {
     });
 };
 
+const endTimeSale = async(req, res, next) => {
+    var event_id = req.body.event_id;
+    var agent_id = req.user.agent_id;
+
+    const carts = Cart.findAll({
+        where: {
+            customer_id: req.user.id,
+            is_closed: null
+        },
+        raw: true,
+        attributes: ['*']
+    });
+
+    var money = 0;
+    carts.forEach(product => {
+        if (product.full_price) {
+            money += product.full_price;
+        }
+    });
+
+    return res.status(200).json({
+        status: 200,
+        data: "done"
+    });
+
+}
+
 
 module.exports = {
     Register,
@@ -907,4 +940,5 @@ module.exports = {
     GetProducsInType,
     BuyProduct,
     buyHistory,
+    endTimeSale
 };

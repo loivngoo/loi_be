@@ -37,6 +37,8 @@ const userRoute = (app) => {
     router.get('/event/products', VerifyToken, usersController.GetProducsInType);
     router.post('/event/products/buy', VerifyToken, usersController.BuyProduct);
     router.get('/event/cart/history', VerifyToken, usersController.buyHistory)
+
+    router.post('/event/end', VerifyToken, usersController.endTimeSale);
     return app.use('/api/v1/users', router);
 };
 
