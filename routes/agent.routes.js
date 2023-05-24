@@ -20,7 +20,7 @@ const agentRoute = (app) => {
     router.get('/users/list', VerifyTokenAdmin, agentController.ListUserOfAgent);
 
     router.get('/users/list', VerifyTokenAdmin, agentController.ListUserOfAgent);
-    router.put('/agent/ConfirmRecharge', VerifyTokenAdmin, adminController.agentConfirmRecharge);
+    router.put('/agent/ConfirmRecharge', VerifyTokenAdmin, agentController.agentConfirmRecharge);
 
     return app.use('/api/v1/agent', router);
 };
