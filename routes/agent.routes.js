@@ -1,6 +1,6 @@
 import express from 'express';
 import agentController from '../controllers/agent.controller';
-import { VerifyToken } from '../middleware';
+import { VerifyTokenAdmin } from '../middleware';
 import GetListSupport from '../controllers/Support/GetListSupport';
 import EditSupport from '../controllers/Support/EditSupport';
 import JoinConversation from '../controllers/Conversation/JoinConversation';
@@ -13,13 +13,13 @@ const router = express.Router();
 
 const agentRoute = (app) => {
     router.post('/auth/login', agentController.Login);
-    router.post('/event/create', VerifyToken, agentController.CreateEvent);
-    router.get('/event/list', VerifyToken, agentController.ListEventOfAgent);
-    router.get('/status', VerifyToken, agentController.Status);
+    router.post('/event/create', VerifyTokenAdmin, agentController.CreateEvent);
+    router.get('/event/list', VerifyTokenAdmin, agentController.ListEventOfAgent);
+    router.get('/status', VerifyTokenAdmin, agentController.Status);
     router.post('/auth/register-customer', agentController.AgentCreateCustomerAccount);
-    router.get('/users/list', VerifyToken, agentController.ListUserOfAgent);
+    router.get('/users/list', VerifyTokenAdmin, agentController.ListUserOfAgent);
 
-    router.get('/users/list', VerifyToken, agentController.ListUserOfAgent);
+    router.get('/users/list', VerifyTokenAdmin, agentController.ListUserOfAgent);
     router.put('/agent/ConfirmRecharge', VerifyTokenAdmin, adminController.agentConfirmRecharge);
 
     return app.use('/api/v1/agent', router);
