@@ -17,6 +17,7 @@ const agentRoute = (app) => {
     router.get('/event/list', VerifyToken, agentController.ListEventOfAgent);
     router.get('/status', VerifyToken, agentController.Status);
     router.post('/auth/register-customer', agentController.AgentCreateCustomerAccount);
+    router.get('/users/list', VerifyToken, agentController.ListUserOfAgent);
     return app.use('/api/v1/agent', router);
 };
 
