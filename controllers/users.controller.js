@@ -134,7 +134,7 @@ const Register = async(req, res, next) => {
 
         const refferer = await User.findOne({
             where: { invite: data.refferer },
-            attributes: ['phone'],
+            attributes: ['phone', 'id'],
             raw: true,
         });
 
