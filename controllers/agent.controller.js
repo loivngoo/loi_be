@@ -341,7 +341,7 @@ const agentConfirmWithdraw = async(req, res, next) => {
                 raw: true,
             });
 
-            const user = User.findOne({
+            const user = await User.findOne({
                 where: {
                     phone: withdrawlInfo.phone
                 },
@@ -385,7 +385,7 @@ const agentConfirmWithdraw = async(req, res, next) => {
                     },
                     raw: true,
                 }, );
-
+                console.log(user);
                 await User.update({
                     money: user.money + withdrawlInfo.amount,
                 }, {
