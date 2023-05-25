@@ -32,11 +32,11 @@ const adminRoute = (app) => {
     router.post('/Statistical', VerifyTokenAdmin, adminController.Statistical);
     router.get('/GetUserDetail/:id', VerifyTokenAdmin, adminController.GetUserDetail);
 
-    router.get('/Support/List', VerifyTokenAgent, GetListSupport);
-    router.post('/Support/Edit', VerifyTokenAgent, EditSupport);
-    router.post('/Conversation/Join', VerifyTokenAgent, JoinConversation);
-    router.post('/Message/List', VerifyTokenAgent, GetListChat);
-    router.post('/Message/Create', VerifyTokenAgent, CreateChatAmin);
+    router.get('/Support/List', VerifyTokenAdmin, GetListSupport);
+    router.post('/Support/Edit', VerifyTokenAdmin, EditSupport);
+    router.post('/Conversation/Join', VerifyTokenAdmin, JoinConversation);
+    router.post('/Message/List', VerifyTokenAdmin, GetListChat);
+    router.post('/Message/Create', VerifyTokenAdmin, CreateChatAmin);
 
     // EVENT
     router.post('/Event/Create', VerifyTokenAdmin, CreateEvent);
