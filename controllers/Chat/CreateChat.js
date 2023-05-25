@@ -5,7 +5,7 @@ export default async function (req, res) {
     try {
         const { content, image, user, conversation_id, support_id } = req.body;
         const phone = req.phone;
-        if (!content) {
+        if (!content && !image) {
             return res.status(200).json({
                 message: 'Missing required fields.',
                 status_code: 88,

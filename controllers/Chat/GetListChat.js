@@ -13,7 +13,7 @@ export default async function (req, res) {
             }
 
             const messages = await Message.find({ conversation_id: support.conversation_id._id })
-                .sort({ created_at: -1 })
+                .sort({ created_at: 1 })
                 .lean();
 
             res.status(200).json({
@@ -25,7 +25,7 @@ export default async function (req, res) {
             if (conversation_id) {
                 console.log('Vaod day');
                 const messages = await Message.find({ conversation_id: conversation_id })
-                    .sort({ created_at: -1 })
+                    .sort({ created_at: 1 })
                     .lean();
                 res.status(200).json({
                     status_code: 200,
