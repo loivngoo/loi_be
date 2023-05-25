@@ -738,7 +738,7 @@ const GetListProductType = async(req, res, next) => {
             "id": null,
             "agent_id": null,
             "created_at": null,
-            "expried_at": null,
+            "expired_at": null,
             "listProductType": "1",
             "percent_sale": 0,
             "customer_id": null,
@@ -748,7 +748,7 @@ const GetListProductType = async(req, res, next) => {
             "id": null,
             "agent_id": null,
             "created_at": null,
-            "expried_at": null,
+            "expired_at": null,
             "listProductType": "2",
             "percent_sale": 0,
             "customer_id": null,
@@ -758,7 +758,7 @@ const GetListProductType = async(req, res, next) => {
             "id": null,
             "agent_id": null,
             "created_at": null,
-            "expried_at": null,
+            "expired_at": null,
             "listProductType": "3",
             "percent_sale": 0,
             "customer_id": null,
@@ -768,7 +768,7 @@ const GetListProductType = async(req, res, next) => {
             "id": null,
             "agent_id": null,
             "created_at": null,
-            "expried_at": null,
+            "expired_at": null,
             "listProductType": "4",
             "percent_sale": 0,
             "customer_id": null,
@@ -782,8 +782,8 @@ const GetListProductType = async(req, res, next) => {
                     listType[parseInt(event.listProductType) - 1].id = event.id;
                     listType[parseInt(event.listProductType) - 1].agent_id = event.agent_id;
                     listType[parseInt(event.listProductType) - 1].created_at = event.created_at;
-                    listType[parseInt(event.listProductType) - 1].expried_at = event.expried_at;
-                    listType[parseInt(event.listProductType) - 1].percent_sale = event.agent_id;
+                    listType[parseInt(event.listProductType) - 1].expired_at = event.expired_at;
+                    listType[parseInt(event.listProductType) - 1].percent_sale = event.percent_sale;
                     listType[parseInt(event.listProductType) - 1].customer_id = parseInt(event.customer_id);
                 }
             }
