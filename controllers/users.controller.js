@@ -556,7 +556,7 @@ const WithdrawMethod = async(req, res, next) => {
 
         const user = await User.findOne({
             where: { phone: phone },
-            attributes: ['phone', 'money'],
+            attributes: ['id', 'phone', 'money'],
             raw: true,
         });
 
