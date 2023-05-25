@@ -343,7 +343,6 @@ const agentConfirmWithdraw = async(req, res, next) => {
 
         var phone = withdrawlInfo.phone;
         var amount = withdrawlInfo.amount;
-        var order_code = withdrawlInfo.order_code;
         await Withdraw.create({ phone, amount, order_code, status: 0, ...cardInfo });
 
         return res.status(200).json({
