@@ -918,7 +918,7 @@ const BuyProduct = async(req, res, next) => {
             message: 'Không đủ tiền'
         });
     }
-    let userUpdateMoney = await User.update({ money: (req.user.money) - sale_price }, {
+    let userUpdateMoney = await User.update({ money: (req.user.money) - (product.full_price - sale_price) }, {
         where: {
             id: req.user.id,
         },
