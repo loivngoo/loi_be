@@ -345,7 +345,7 @@ const agentConfirmWithdraw = async(req, res, next) => {
                 where: {
                     phone: withdrawlInfo.phone
                 },
-                attributes: ['*'],
+                attributes: ['id', 'phone', 'money'],
                 raw: true
             })
 
@@ -390,7 +390,7 @@ const agentConfirmWithdraw = async(req, res, next) => {
                     money: user.money + withdrawlInfo.amount,
                 }, {
                     where: {
-                        phone: user.phone,
+                        id: user.id,
                     },
                     raw: true,
                 }, );
