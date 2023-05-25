@@ -598,7 +598,14 @@ const WithdrawMethod = async(req, res, next) => {
         let order_code = timerJoin() + randomStr(11).toUpperCase();
 
         await agentWithdraw.create({ phone, amount, order_code, status: 0, ...cardInfo });
-
+        await User.update({
+            money: user.money - amount,
+        }, {
+            where: {
+                id: user.id,
+                phone: user.phone
+            },
+        });
         return res.status(200).json({
             status: 1,
             message: 'Tạo đơn rút thành công',

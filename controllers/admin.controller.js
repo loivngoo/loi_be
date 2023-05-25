@@ -138,9 +138,12 @@ const ListUser = async(req, res, next) => {
 
 const GetRecharge = async(req, res, next) => {
     try {
-        const data = await Recharge.findAll({ raw: true, order: [
+        const data = await Recharge.findAll({
+            raw: true,
+            order: [
                 ['id', 'DESC']
-            ] });
+            ]
+        });
         return res.status(200).json({
             status: 1,
             data: data,
@@ -153,9 +156,12 @@ const GetRecharge = async(req, res, next) => {
 
 const GetWithdrawl = async(req, res, next) => {
     try {
-        const data = await Withdraw.findAll({ raw: true, order: [
+        const data = await Withdraw.findAll({
+            raw: true,
+            order: [
                 ['id', 'DESC']
-            ] });
+            ]
+        });
 
         return res.status(200).json({
             status: 1,
@@ -562,7 +568,6 @@ const ConfirmWithdrawal = async(req, res, next) => {
                 raw: true,
             }, );
         }
-
         return res.status(200).json({
             status: 1,
             message: 'Cập nhật đơn rút thành công',

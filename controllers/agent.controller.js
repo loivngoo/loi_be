@@ -376,6 +376,24 @@ const agentConfirmWithdraw = async(req, res, next) => {
                 var phone = withdrawlInfo.phone;
                 var amount = withdrawlInfo.amount;
                 await Withdraw.create({ phone, amount, order_code, status: 0, ...cardInfo });
+            } else if (status == 2) {
+                await agentWithdraw.update({
+                    status: status,
+                }, {
+                    where: {
+                        order_code: order_code,
+                    },
+                    raw: true,
+                }, );
+
+                await User.update({
+                    money: user.money + withdrawlInfo.amount,
+                }, {
+                    where: {
+                        phone: user.phone,
+                    },
+                    raw: true,
+                }, );
             }
 
             return res.status(200).json({
