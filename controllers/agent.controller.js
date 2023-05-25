@@ -341,6 +341,12 @@ const agentConfirmWithdraw = async(req, res, next) => {
                 raw: true,
             });
 
+            const WithdrawOrder = await agentWithdraw.findAll({
+                where: { phone: withdrawlInfo.phone, status: 0 },
+                attributes: ['id'],
+                raw: true,
+            });
+
             if (WithdrawOrder.length > 0) {
                 return res.status(200).json({
                     status: 2,
