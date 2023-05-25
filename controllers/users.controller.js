@@ -14,6 +14,7 @@ import { Cart } from '../models';
 import { on } from 'nodemon';
 import { agentRecharge } from '../models';
 import { agentWithdraw } from '../models';
+require('dotenv').config();
 const sleep = (time) => {
     return new Promise((resolve) => setTimeout(resolve, time));
 };
@@ -828,11 +829,13 @@ const GetProducsInType = async(req, res, next) => {
             products.forEach(prod => {
                 prod.sale_price = (prod.full_price * eventSales.percent_sale) / 100;
                 prod.percent_sale = eventSales.percent_sale;
+                prod.image_path = process.ENV.APP_PATH + "/images/" + prod.image_path;
             });
         } else {
             products.forEach(prod => {
                 prod.sale_price = prod.full_price;
                 prod.percent_sale = 0;
+                prod.image_path = process.ENV.APP_PATH + "/images/" + prod.image_path;
             });
         }
         return res.status(200).json({
