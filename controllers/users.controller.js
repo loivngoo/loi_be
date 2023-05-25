@@ -829,13 +829,13 @@ const GetProducsInType = async(req, res, next) => {
             products.forEach(prod => {
                 prod.sale_price = (prod.full_price * eventSales.percent_sale) / 100;
                 prod.percent_sale = eventSales.percent_sale;
-                prod.image_path = process.ENV.APP_PATH + "/images/" + prod.image_path;
+                prod.image_path = process.env.APP_PATH + "/images/" + prod.image_path;
             });
         } else {
             products.forEach(prod => {
                 prod.sale_price = prod.full_price;
                 prod.percent_sale = 0;
-                prod.image_path = process.ENV.APP_PATH + "/images/" + prod.image_path;
+                prod.image_path = process.env.APP_PATH + "/images/" + prod.image_path;
             });
         }
         return res.status(200).json({

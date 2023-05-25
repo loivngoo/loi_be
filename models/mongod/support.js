@@ -11,7 +11,6 @@ const SupportSchema = new mongoose.Schema(
         service: {
             type: String,
             trim: true,
-            enum: ['topup', 'withdraw', 'shopping'],
         },
         user: {
             type: String,

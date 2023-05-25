@@ -12,7 +12,6 @@ const ConversationSchema = new mongoose.Schema(
 
         service: {
             type: String,
-            enum: ['topup', 'withdraw', 'shopping'],
         },
     },
     {
