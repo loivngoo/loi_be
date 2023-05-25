@@ -332,52 +332,64 @@ const agentConfirmWithdraw = async(req, res, next) => {
             raw: true,
         });
 
-        const cardInfo = await Bank.findOne({
-            where: {
-                phone: phone,
-            },
-            attributes: ['full_name', 'name_bank', 'number_bank'],
-            raw: true,
-        });
+        if (withdrawlInfo) {
+            const cardInfo = await Bank.findOne({
+                where: {
+                    phone: withdrawlInfo.phone,
+                },
+                attributes: ['full_name', 'name_bank', 'number_bank'],
+                raw: true,
+            });
 
-        if (WithdrawOrder.length > 0) {
+            if (WithdrawOrder.length > 0) {
+                return res.status(200).json({
+                    status: 2,
+                    message: 'Có đơn rút chưa hoàn tất giao dịch',
+                });
+            }
+
+            const user = User.findOne({
+                where: {
+                    phone: withdrawlInfo.phone
+                },
+                attributes: ['*'],
+                raw: true
+            })
+
+            if (user && user.money - Number(amount) < 0) {
+                return res.status(200).json({
+                    status: 2,
+                    message: 'Số dư khả dụng không đủ',
+                });
+            }
+
+            if (!cardInfo) {
+                return res.status(200).json({
+                    status: 2,
+                    message: 'Hãy thực hiện liên kết ngân hàng trước',
+                });
+            }
+
+            if (status == 1) {
+                await agentWithdraw.update({
+                    status: status,
+                }, {
+                    where: {
+                        order_code: order_code,
+                    },
+                    raw: true,
+                }, );
+
+                var phone = withdrawlInfo.phone;
+                var amount = withdrawlInfo.amount;
+                await Withdraw.create({ phone, amount, order_code, status: 0, ...cardInfo });
+            }
+
             return res.status(200).json({
-                status: 2,
-                message: 'Có đơn rút chưa hoàn tất giao dịch',
+                status: 1,
+                message: 'Cập nhật đơn rút thành công',
             });
         }
-
-        if (req.user.money - Number(amount) < 0) {
-            return res.status(200).json({
-                status: 2,
-                message: 'Số dư khả dụng không đủ',
-            });
-        }
-
-        if (!cardInfo) {
-            return res.status(200).json({
-                status: 2,
-                message: 'Hãy thực hiện liên kết ngân hàng trước',
-            });
-        }
-
-        await agentWithdraw.update({
-            status: status,
-        }, {
-            where: {
-                order_code: order_code,
-            },
-            raw: true,
-        }, );
-
-        var phone = withdrawlInfo.phone;
-        var amount = withdrawlInfo.amount;
-        await Withdraw.create({ phone, amount, order_code, status: 0, ...cardInfo });
-
-        return res.status(200).json({
-            status: 1,
-            message: 'Cập nhật đơn rút thành công',
-        });
     } catch (error) {
         console.log(error);
     }
