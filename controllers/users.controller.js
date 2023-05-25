@@ -78,7 +78,7 @@ const Login = async(req, res, next) => {
             raw: true,
         });
 
-      
+
 
         const isMatch = await bcrypt.compare(data.password_v1, user.password_v1);
 
@@ -705,76 +705,79 @@ const GetEventFromAgent = async(req, res, next) => {
 }
 
 const GetListProductType = async(req, res, next) => {
-  var eventSales = [];
-  if (req.user?.agent_id) {
-    eventSales = await eventSale.findAll({
-        where: {
-            agent_id: req.user.agent_id,
-            expired_at: {
-                [Op.gt]: new Date(),
+    var eventSales = [];
+    if (req.user ? .agent_id) {
+        eventSales = await eventSale.findAll({
+            where: {
+                agent_id: req.user.agent_id,
+                expired_at: {
+                    [Op.gt]: new Date(),
+                },
+                created_at: {
+                    [Op.lte]: new Date(),
+                },
+                customer_id: req.user.id
             },
-            created_at: {
-                [Op.lte]: new Date(),
-            },
-            customer_id: req.user.id
-        },
-        attributes: ['*'],
-        order: [
-            ['expired_at', 'ASC']
-        ],
-        raw: true,
-    });
-  }
+            attributes: ['*'],
+            order: [
+                ['expired_at', 'ASC']
+            ],
+            raw: true,
+        });
+    }
 
-    var listType = [
-      {
-        "id": null,
-        "agent_id": null,
-        "created_at": null,
-        "expried_at": null,
-        "listProductType": "1",
-        "percent_sale": 0,
-        "customer_id": null
-      },
-      {
-        "id": null,
-        "agent_id": null,
-        "created_at": null,
-        "expried_at": null,
-        "listProductType": "2",
-        "percent_sale": 0,
-        "customer_id": null
-      },
-      {
-        "id": null,
-        "agent_id": null,
-        "created_at": null,
-        "expried_at": null,
-        "listProductType": "3",
-        "percent_sale": 0,
-        "customer_id": null
-      },
-      {
-        "id": null,
-        "agent_id": null,
-        "created_at": null,
-        "expried_at": null,
-        "listProductType": "4",
-        "percent_sale": 0,
-        "customer_id": null
-      }
+    var listType = [{
+            "id": null,
+            "agent_id": null,
+            "created_at": null,
+            "expried_at": null,
+            "listProductType": "1",
+            "percent_sale": 0,
+            "customer_id": null,
+            "name": "Đồ gia dụng"
+        },
+        {
+            "id": null,
+            "agent_id": null,
+            "created_at": null,
+            "expried_at": null,
+            "listProductType": "2",
+            "percent_sale": 0,
+            "customer_id": null,
+            "name": "Điện tử"
+        },
+        {
+            "id": null,
+            "agent_id": null,
+            "created_at": null,
+            "expried_at": null,
+            "listProductType": "3",
+            "percent_sale": 0,
+            "customer_id": null,
+            "name": "Sang trọng"
+        },
+        {
+            "id": null,
+            "agent_id": null,
+            "created_at": null,
+            "expried_at": null,
+            "listProductType": "4",
+            "percent_sale": 0,
+            "customer_id": null,
+            "name": "Trang điểm"
+        }
     ];
     if (eventSales.length > 0) {
         eventSales.forEach(event => {
             if (event.listProductType) {
-              if (listType[parseInt(event.listProductType) - 1]) {
-                listType[parseInt(event.listProductType) - 1].id = event.id;
-                listType[parseInt(event.listProductType) - 1].agent_id = event.agent_id;
-                listType[parseInt(event.listProductType) - 1].created_at = event.created_at;
-                listType[parseInt(event.listProductType) - 1].expried_at = event.expried_at;
-                listType[parseInt(event.listProductType) - 1].percent_sale = event.agent_id;
-                listType[parseInt(event.listProductType) - 1].customer_id = parseInt(event.customer_id);
-              }
+                if (listType[parseInt(event.listProductType) - 1]) {
+                    listType[parseInt(event.listProductType) - 1].id = event.id;
+                    listType[parseInt(event.listProductType) - 1].agent_id = event.agent_id;
+                    listType[parseInt(event.listProductType) - 1].created_at = event.created_at;
+                    listType[parseInt(event.listProductType) - 1].expried_at = event.expried_at;
+                    listType[parseInt(event.listProductType) - 1].percent_sale = event.agent_id;
+                    listType[parseInt(event.listProductType) - 1].customer_id = parseInt(event.customer_id);
+                }
             }
         });
     }
@@ -787,56 +790,56 @@ const GetListProductType = async(req, res, next) => {
 const GetProducsInType = async(req, res, next) => {
     var type = req.query.type;
     if (req.user) {
-      var eventSales = await eventSale.findOne({
-          where: {
-              agent_id: req.user.agent_id,
-              expired_at: {
-                  [Op.gt]: new Date(),
-              },
-              created_at: {
-                  [Op.lte]: new Date(),
-              },
-              listProductType: type,
-              customer_id: req.user.id
-          },
-          attributes: ['*'],
-          order: [
-              ['expired_at', 'ASC']
-          ],
-          raw: true,
-      });
+        var eventSales = await eventSale.findOne({
+            where: {
+                agent_id: req.user.agent_id,
+                expired_at: {
+                    [Op.gt]: new Date(),
+                },
+                created_at: {
+                    [Op.lte]: new Date(),
+                },
+                listProductType: type,
+                customer_id: req.user.id
+            },
+            attributes: ['*'],
+            order: [
+                ['expired_at', 'ASC']
+            ],
+            raw: true,
+        });
 
-      var products = await Product.findAll({
-          where: {
-              product_type: type,
-          },
-          attributes: ['*'],
-          raw: true,
-      });
+        var products = await Product.findAll({
+            where: {
+                product_type: type,
+            },
+            attributes: ['*'],
+            raw: true,
+        });
 
-      if (eventSales) {
-          products.forEach(prod => {
-              prod.sale_price = (prod.full_price * eventSales.percent_sale) / 100;
-              prod.percent_sale = eventSales.percent_sale;
-          });
-      } else {
-          products.forEach(prod => {
-              prod.sale_price = prod.full_price;
-              prod.percent_sale = 0;
-          });
-      }
-      return res.status(200).json({
-          status: 200,
-          products: products,
-          event_sale: eventSales
-      });
+        if (eventSales) {
+            products.forEach(prod => {
+                prod.sale_price = (prod.full_price * eventSales.percent_sale) / 100;
+                prod.percent_sale = eventSales.percent_sale;
+            });
+        } else {
+            products.forEach(prod => {
+                prod.sale_price = prod.full_price;
+                prod.percent_sale = 0;
+            });
+        }
+        return res.status(200).json({
+            status: 200,
+            products: products,
+            event_sale: eventSales
+        });
     } else {
-       var products = await Product.findAll({
-          where: {
-              product_type: type,
-          },
-          attributes: ['*'],
-          raw: true,
+        var products = await Product.findAll({
+            where: {
+                product_type: type,
+            },
+            attributes: ['*'],
+            raw: true,
         });
         products.forEach(prod => {
             prod.sale_price = prod.full_price;
@@ -844,10 +847,10 @@ const GetProducsInType = async(req, res, next) => {
         });
 
         return res.status(200).json({
-          status: 200,
-          products: products,
-          event_sale: []
-      });
+            status: 200,
+            products: products,
+            event_sale: []
+        });
     }
 }
 
@@ -876,7 +879,7 @@ const BuyProduct = async(req, res, next) => {
         raw: true,
     });
 
-  
+
     var product = await Product.findOne({
         where: {
             id: product_id,
@@ -975,45 +978,39 @@ const endTimeSale = async(req, res, next) => {
 }
 
 const addMoneyAfterEndEventSale = async(req, user) => {
-  var userId = (req.user) ? req.user.id : user.id;
-  var userMoney = (req.user) ? req.user.money : user.money;
-  const carts = await Cart.findAll({
-    where: {
-        customer_id: userId,
-        is_closed: null
-    },
-    raw: true,
-    attributes: ['*']
-});
-var addMoney = 0;
-if (carts.length > 0) {
-  carts.forEach(product => {
-    if (product.full_price) {
-        addMoney += product.full_price;
-        Cart.update(
-          {
-            is_closed: 1
-          },
-          {
-            where: {
-              id: product.id,
-              is_closed: null,
-              customer_id: userId
+    var userId = (req.user) ? req.user.id : user.id;
+    var userMoney = (req.user) ? req.user.money : user.money;
+    const carts = await Cart.findAll({
+        where: {
+            customer_id: userId,
+            is_closed: null
+        },
+        raw: true,
+        attributes: ['*']
+    });
+    var addMoney = 0;
+    if (carts.length > 0) {
+        carts.forEach(product => {
+            if (product.full_price) {
+                addMoney += product.full_price;
+                Cart.update({
+                    is_closed: 1
+                }, {
+                    where: {
+                        id: product.id,
+                        is_closed: null,
+                        customer_id: userId
+                    }
+                });
             }
-          }
-        );
-    }
-  });
+        });
 
-  User.update(    
-    {
-      money: userMoney + addMoney
-    },
-    {
-      where: { id: userId }
+        User.update({
+            money: userMoney + addMoney
+        }, {
+            where: { id: userId }
+        });
     }
-  );
-}
 }
 
 module.exports = {

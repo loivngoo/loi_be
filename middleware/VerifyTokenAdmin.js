@@ -22,7 +22,7 @@ const VerifyTokenAdmin = async(req, res, next) => {
                 attributes: ['phone', 'role', 'id', 'invite'],
                 raw: true,
             });
-            if ((!user || user.role != 0)) {
+            if ((!user || user.role != 1)) {
                 return res.status(200).json({
                     status: 4,
                     message: 'Phiên đăng nhập hết hạn',
