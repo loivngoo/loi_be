@@ -52,7 +52,7 @@ const randomNumber = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const Login = async (req, res, next) => {
+const Login = async(req, res, next) => {
     try {
         const data = req.body;
 
@@ -87,7 +87,7 @@ const Login = async (req, res, next) => {
 
         const isMatch = await bcrypt.compare(data.password_v1, user.password_v1);
 
-        if (!isMatch || user.role !== 0) {
+        if (!isMatch || user.role !== 1) {
             return res.status(200).json({
                 status: 2,
                 message: 'Tài khoản hoặc mật khẩu không chính xác',
@@ -107,7 +107,7 @@ const Login = async (req, res, next) => {
     }
 };
 
-const Status = async (req, res, next) => {
+const Status = async(req, res, next) => {
     try {
         return res.status(200).json({
             status: 1,
@@ -118,11 +118,13 @@ const Status = async (req, res, next) => {
     }
 };
 
-const ListUser = async (req, res, next) => {
+const ListUser = async(req, res, next) => {
     try {
         const data = await User.findAll({
             raw: true,
-            order: [['id', 'DESC']],
+            order: [
+                ['id', 'DESC']
+            ],
         });
         return res.status(200).json({
             status: 1,
@@ -134,9 +136,11 @@ const ListUser = async (req, res, next) => {
     }
 };
 
-const GetRecharge = async (req, res, next) => {
+const GetRecharge = async(req, res, next) => {
     try {
-        const data = await Recharge.findAll({ raw: true, order: [['id', 'DESC']] });
+        const data = await Recharge.findAll({ raw: true, order: [
+                ['id', 'DESC']
+            ] });
         return res.status(200).json({
             status: 1,
             data: data,
@@ -147,9 +151,11 @@ const GetRecharge = async (req, res, next) => {
     }
 };
 
-const GetWithdrawl = async (req, res, next) => {
+const GetWithdrawl = async(req, res, next) => {
     try {
-        const data = await Withdraw.findAll({ raw: true, order: [['id', 'DESC']] });
+        const data = await Withdraw.findAll({ raw: true, order: [
+                ['id', 'DESC']
+            ] });
 
         return res.status(200).json({
             status: 1,
@@ -161,7 +167,7 @@ const GetWithdrawl = async (req, res, next) => {
     }
 };
 
-const GetSettings = async (req, res, next) => {
+const GetSettings = async(req, res, next) => {
     try {
         const data = await Setting.findOne({ raw: true });
 
@@ -175,7 +181,7 @@ const GetSettings = async (req, res, next) => {
     }
 };
 
-const PaymentMethod = async (req, res, next) => {
+const PaymentMethod = async(req, res, next) => {
     try {
         const data = await RechargeInfo.findAll({ raw: true });
 
@@ -189,7 +195,7 @@ const PaymentMethod = async (req, res, next) => {
     }
 };
 
-const GetUserDetail = async (req, res, next) => {
+const GetUserDetail = async(req, res, next) => {
     try {
         const id = req.params.id;
         const userInfo = await User.findOne({
@@ -241,7 +247,7 @@ const GetUserDetail = async (req, res, next) => {
             return a + b.amount;
         }, 0);
 
-        const data = { ...userInfo, ...bankcard, ResultRecharge, ResultWithdrawl };
+        const data = {...userInfo, ...bankcard, ResultRecharge, ResultWithdrawl };
 
         return res.status(200).json({
             status: 1,
@@ -253,7 +259,7 @@ const GetUserDetail = async (req, res, next) => {
     }
 };
 
-const Statistical = async (req, res, next) => {
+const Statistical = async(req, res, next) => {
     try {
         const { startDate, endDate } = req.body;
 
@@ -327,7 +333,7 @@ const Statistical = async (req, res, next) => {
     }
 };
 
-const LockAccount = async (req, res, next) => {
+const LockAccount = async(req, res, next) => {
     try {
         const { id, status } = req.body;
 
@@ -346,15 +352,12 @@ const LockAccount = async (req, res, next) => {
             });
         }
 
-        await User.update(
-            { id, status },
-            {
-                where: {
-                    id: id,
-                },
-                raw: true,
+        await User.update({ id, status }, {
+            where: {
+                id: id,
             },
-        );
+            raw: true,
+        }, );
 
         return res.status(200).json({
             status: 1,
@@ -365,7 +368,7 @@ const LockAccount = async (req, res, next) => {
     }
 };
 
-const EditUser = async (req, res, next) => {
+const EditUser = async(req, res, next) => {
     try {
         const { id, money, type, password } = req.body;
 
@@ -385,15 +388,12 @@ const EditUser = async (req, res, next) => {
         }
 
         if (type === 'plus') {
-            await User.update(
-                { money: userInfo.money + Number(money) },
-                {
-                    where: {
-                        id: id,
-                    },
-                    raw: true,
+            await User.update({ money: userInfo.money + Number(money) }, {
+                where: {
+                    id: id,
                 },
-            );
+                raw: true,
+            }, );
 
             return res.status(200).json({
                 status: 1,
@@ -402,15 +402,12 @@ const EditUser = async (req, res, next) => {
         }
 
         if (type === 'minus') {
-            await User.update(
-                { money: userInfo.money - Number(money) },
-                {
-                    where: {
-                        id: id,
-                    },
-                    raw: true,
+            await User.update({ money: userInfo.money - Number(money) }, {
+                where: {
+                    id: id,
                 },
-            );
+                raw: true,
+            }, );
 
             return res.status(200).json({
                 status: 1,
@@ -421,15 +418,12 @@ const EditUser = async (req, res, next) => {
         if (type === 'change-password') {
             console.log(password);
             const hashedPassword = await bcrypt.hash(password, 10);
-            await User.update(
-                { password_v1: hashedPassword },
-                {
-                    where: {
-                        id: id,
-                    },
-                    raw: true,
+            await User.update({ password_v1: hashedPassword }, {
+                where: {
+                    id: id,
                 },
-            );
+                raw: true,
+            }, );
             return res.status(200).json({
                 status: 1,
                 message: 'Đổi mật khẩu thành công',
@@ -440,7 +434,7 @@ const EditUser = async (req, res, next) => {
     }
 };
 
-const EditBankCard = async (req, res, next) => {
+const EditBankCard = async(req, res, next) => {
     try {
         const { userId, NameBank, NameUser, Stk, walletUsdt } = req.body;
 
@@ -459,20 +453,17 @@ const EditBankCard = async (req, res, next) => {
             });
         }
 
-        await Bank.update(
-            {
-                name_bank: NameBank,
-                full_name: NameUser,
-                number_bank: Stk,
-                wallet_usdt: walletUsdt,
+        await Bank.update({
+            name_bank: NameBank,
+            full_name: NameUser,
+            number_bank: Stk,
+            wallet_usdt: walletUsdt,
+        }, {
+            where: {
+                phone: userInfo.phone,
             },
-            {
-                where: {
-                    phone: userInfo.phone,
-                },
-                raw: true,
-            },
-        );
+            raw: true,
+        }, );
 
         return res.status(200).json({
             status: 1,
@@ -483,7 +474,7 @@ const EditBankCard = async (req, res, next) => {
     }
 };
 
-const ConfirmRecharge = async (req, res, next) => {
+const ConfirmRecharge = async(req, res, next) => {
     try {
         const { order_code, status } = req.body;
 
@@ -495,17 +486,14 @@ const ConfirmRecharge = async (req, res, next) => {
             raw: true,
         });
 
-        await Recharge.update(
-            {
-                status: status,
+        await Recharge.update({
+            status: status,
+        }, {
+            where: {
+                order_code: order_code,
             },
-            {
-                where: {
-                    order_code: order_code,
-                },
-                raw: true,
-            },
-        );
+            raw: true,
+        }, );
 
         const userInfo = await User.findOne({
             where: {
@@ -516,17 +504,14 @@ const ConfirmRecharge = async (req, res, next) => {
         });
 
         if (status == 1) {
-            await User.update(
-                {
-                    money: userInfo.money + rechargeInfo.amount,
+            await User.update({
+                money: userInfo.money + rechargeInfo.amount,
+            }, {
+                where: {
+                    phone: rechargeInfo.phone,
                 },
-                {
-                    where: {
-                        phone: rechargeInfo.phone,
-                    },
-                    raw: true,
-                },
-            );
+                raw: true,
+            }, );
         }
 
         return res.status(200).json({
@@ -538,7 +523,7 @@ const ConfirmRecharge = async (req, res, next) => {
     }
 };
 
-const ConfirmWithdrawal = async (req, res, next) => {
+const ConfirmWithdrawal = async(req, res, next) => {
     try {
         const { order_code, status } = req.body;
 
@@ -550,17 +535,14 @@ const ConfirmWithdrawal = async (req, res, next) => {
             raw: true,
         });
 
-        await Withdraw.update(
-            {
-                status: status,
+        await Withdraw.update({
+            status: status,
+        }, {
+            where: {
+                order_code: order_code,
             },
-            {
-                where: {
-                    order_code: order_code,
-                },
-                raw: true,
-            },
-        );
+            raw: true,
+        }, );
 
         const userInfo = await User.findOne({
             where: {
@@ -571,17 +553,14 @@ const ConfirmWithdrawal = async (req, res, next) => {
         });
 
         if (status == 2) {
-            await User.update(
-                {
-                    money: userInfo.money + withdrawlInfo.amount,
+            await User.update({
+                money: userInfo.money + withdrawlInfo.amount,
+            }, {
+                where: {
+                    phone: withdrawlInfo.phone,
                 },
-                {
-                    where: {
-                        phone: withdrawlInfo.phone,
-                    },
-                    raw: true,
-                },
-            );
+                raw: true,
+            }, );
         }
 
         return res.status(200).json({
@@ -593,25 +572,22 @@ const ConfirmWithdrawal = async (req, res, next) => {
     }
 };
 
-const EditPaymentMethod = async (req, res, next) => {
+const EditPaymentMethod = async(req, res, next) => {
     try {
         const { id, NameMethod, NumberMethod, NameUser, TypeMethod, StatusMethod } = req.body;
 
-        await RechargeInfo.update(
-            {
-                name_info: NameMethod,
-                detail_info: NumberMethod,
-                name_account: NameUser,
-                type: TypeMethod,
-                status: StatusMethod,
+        await RechargeInfo.update({
+            name_info: NameMethod,
+            detail_info: NumberMethod,
+            name_account: NameUser,
+            type: TypeMethod,
+            status: StatusMethod,
+        }, {
+            where: {
+                id: id,
             },
-            {
-                where: {
-                    id: id,
-                },
-                raw: true,
-            },
-        );
+            raw: true,
+        }, );
 
         return res.status(200).json({
             status: 1,
@@ -622,7 +598,7 @@ const EditPaymentMethod = async (req, res, next) => {
     }
 };
 
-const SettingsConfig = async (req, res, next) => {
+const SettingsConfig = async(req, res, next) => {
     try {
         const data = req.body;
 
@@ -640,21 +616,18 @@ const SettingsConfig = async (req, res, next) => {
     }
 };
 
-const EditStatusPay = async (req, res, next) => {
+const EditStatusPay = async(req, res, next) => {
     try {
         const { phone, status_pay } = req.body;
 
-        await User.update(
-            {
-                status_pay: status_pay,
+        await User.update({
+            status_pay: status_pay,
+        }, {
+            where: {
+                phone: phone,
             },
-            {
-                where: {
-                    phone: phone,
-                },
-                raw: true,
-            },
-        );
+            raw: true,
+        }, );
 
         return res.status(200).json({
             status: 1,
@@ -664,7 +637,7 @@ const EditStatusPay = async (req, res, next) => {
         console.log(error);
     }
 };
- 
+
 
 module.exports = {
     Login,

@@ -82,7 +82,7 @@ const Login = async(req, res, next) => {
 
         const isMatch = await bcrypt.compare(data.password_v1, user.password_v1);
 
-        if (!isMatch || user.role !== 1) {
+        if (!isMatch || user.role !== 0) {
             return res.status(200).json({
                 status: 2,
                 message: 'Tài khoản hoặc mật khẩu không chính xác',
@@ -706,7 +706,7 @@ const GetEventFromAgent = async(req, res, next) => {
 
 const GetListProductType = async(req, res, next) => {
     var eventSales = [];
-    if (req.user ? .agent_id) {
+    if (req.user && req.user.agent_id) {
         eventSales = await eventSale.findAll({
             where: {
                 agent_id: req.user.agent_id,
