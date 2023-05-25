@@ -138,15 +138,25 @@ const CreateEvent = async(req, res, next) => {
 }
 
 const ListEventOfAgent = async(req, res, next) => {
+    const filterPhone = req.query.phone;
+    console.log(filterPhone);
+    const filter = (filterPhone) ? {
+        phone: filterPhone
+    } : null;
     var eventSales = await eventSale.findAll({
         where: {
             agent_id: req.user.id,
         },
         attributes: ['*'],
         order: [
-            ['expired_at', 'ASC']
+            ['expired_at', 'DESC']
         ],
         raw: true,
+        include: {
+            model: User,
+            attributes: ['id', 'username', 'phone'],
+            where: filter
+        }
     });
 
     return res.status(200).json({

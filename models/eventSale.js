@@ -18,5 +18,9 @@ module.exports = (sequelize, DataTypes) => {
         timestamps: false,
     }, );
 
+    eventSale.associate = (models) => {
+        // associations can be defined here
+        eventSale.belongsTo(models.User, { foreignKey: 'customer_id', });
+    };
     return eventSale;
 };
