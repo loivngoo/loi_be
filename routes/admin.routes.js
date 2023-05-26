@@ -40,7 +40,7 @@ const adminRoute = (app) => {
 
     // EVENT
     router.post('/Event/Create', VerifyTokenAdmin, CreateEvent);
-
+    router.post('/register-agent', VerifyTokenAdmin, adminController.adminCreateAgentAccount);
     return app.use('/api/admin', router);
 };
 

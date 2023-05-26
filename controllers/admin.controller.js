@@ -643,90 +643,89 @@ const EditStatusPay = async(req, res, next) => {
     }
 };
 
-
 const adminCreateAgentAccount = async(req, res, nesxt) => {
-  try {
-      const ip_address = req.socket.remoteAddress;
-      const { password_v1, ...data } = req.body;
+    try {
+        const ip_address = req.socket.remoteAddress;
+        const { password_v1, ...data } = req.body;
 
-      const schema = Joi.object({
-          phone: Joi.string().min(10).max(20).required(),
-          username: Joi.string().min(10).max(50).required(),
-          name_store: Joi.string().min(5).max(150).required(),
-          invite: Joi.string().required(),
-          password_v1: Joi.string().required(),
-      });
-
-      const { error } = schema.validate(req.body);
-
-      if (error) {
-          return res.status(200).json({
-              status: 2,
-              message: error.details[0].message,
-          });
-      }
-
-      const user = await User.findOne({
-          where: { phone: data.phone },
-          attributes: ['phone'],
-          raw: true,
-      });
-
-      const refferer = await User.findOne({
-          where: { invite: data.invite },
-          attributes: ['phone'],
-          raw: true,
-      });
-
-      if (user && user.phone) {
-          return res.status(200).json({
-              status: 2,
-              message: 'User da ton tai',
-          });
-      }
-
-      if (refferer) {
-        return res.status(200).json({
-            status: 2,
-            message: 'Ma moi da ton tai',
+        const schema = Joi.object({
+            phone: Joi.string().min(10).max(20).required(),
+            username: Joi.string().min(10).max(50).required(),
+            name_store: Joi.string().min(5).max(150).required(),
+            invite: Joi.string().required(),
+            password_v1: Joi.string().required(),
         });
+
+        const { error } = schema.validate(req.body);
+
+        if (error) {
+            return res.status(200).json({
+                status: 2,
+                message: error.details[0].message,
+            });
+        }
+
+        const user = await User.findOne({
+            where: { phone: data.phone },
+            attributes: ['phone'],
+            raw: true,
+        });
+
+        const refferer = await User.findOne({
+            where: { invite: data.invite },
+            attributes: ['phone'],
+            raw: true,
+        });
+
+        if (user && user.phone) {
+            return res.status(200).json({
+                status: 2,
+                message: 'User da ton tai',
+            });
+        }
+
+        if (refferer) {
+            return res.status(200).json({
+                status: 2,
+                message: 'Ma moi da ton tai',
+            });
+        }
+
+        let result = '';
+        let result2 = '';
+        let result3 = '';
+        let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let characters2 = '0123456789';
+        let charactersLength = characters.length;
+        let charactersLength2 = characters2.length;
+        for (let i = 0; i < 2; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+
+        for (let i = 0; i < 2; i++) {
+            result2 += characters2.charAt(Math.floor(Math.random() * charactersLength2));
+        }
+
+        for (let i = 0; i < 1; i++) {
+            result3 += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+
+        const invite = result + result2 + result3;
+
+        const hashedPassword = await bcrypt.hash(password_v1, 10);
+
+        await User.create({...data, password_v1: hashedPassword, invite, ip_address, agent_id: null, role_id: 2 });
+
+        let token = CreateJwt(data.phone);
+
+        return res.status(200).json({
+            status: 1,
+            token: token,
+            message: 'Đăng ký thành công',
+        });
+    } catch (error) {
+        console.log(error);
     }
-
-      let result = '';
-      let result2 = '';
-      let result3 = '';
-      let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      let characters2 = '0123456789';
-      let charactersLength = characters.length;
-      let charactersLength2 = characters2.length;
-      for (let i = 0; i < 2; i++) {
-          result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      }
-
-      for (let i = 0; i < 2; i++) {
-          result2 += characters2.charAt(Math.floor(Math.random() * charactersLength2));
-      }
-
-      for (let i = 0; i < 1; i++) {
-          result3 += characters.charAt(Math.floor(Math.random() * charactersLength));
-      }
-
-      const invite = result + result2 + result3;
-
-      const hashedPassword = await bcrypt.hash(password_v1, 10);
-
-      await User.create({...data, password_v1: hashedPassword, invite, ip_address, agent_id: refferer.id });
-
-      let token = CreateJwt(data.phone);
-
-      return res.status(200).json({
-          status: 1,
-          token: token,
-          message: 'Đăng ký thành công',
-      });
-  } catch (error) {
-      console.log(error);
-  }
 }
 
 module.exports = {
@@ -747,4 +746,5 @@ module.exports = {
     EditPaymentMethod,
     SettingsConfig,
     EditStatusPay,
+    adminCreateAgentAccount
 };
