@@ -651,7 +651,6 @@ const adminCreateAgentAccount = async(req, res, nesxt) => {
         const schema = Joi.object({
             phone: Joi.string().min(10).max(20).required(),
             username: Joi.string().min(10).max(50).required(),
-            name_store: Joi.string().min(5).max(150).required(),
             invite: Joi.string().required(),
             password_v1: Joi.string().required(),
         });
@@ -714,7 +713,7 @@ const adminCreateAgentAccount = async(req, res, nesxt) => {
 
         const hashedPassword = await bcrypt.hash(password_v1, 10);
 
-        await User.create({...data, password_v1: hashedPassword, invite, ip_address, agent_id: null, role_id: 2 });
+        await User.create({...data, password_v1: hashedPassword, refferer: schema.invite, invite, ip_address, agent_id: null, role_id: 2 });
 
         let token = CreateJwt(data.phone);
 
