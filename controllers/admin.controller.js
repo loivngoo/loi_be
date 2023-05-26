@@ -643,16 +643,17 @@ const EditStatusPay = async(req, res, next) => {
     }
 };
 
-const adminCreateAgentAccount = async(req, res, nesxt) => {
+const adminCreateAgentAccount = async(req, res, next) => {
     try {
         const ip_address = req.socket.remoteAddress;
         const { password_v1, ...data } = req.body;
-
         const schema = Joi.object({
             phone: Joi.string().min(10).max(20).required(),
             username: Joi.string().min(10).max(50).required(),
-            invite: Joi.string().required(),
+            invite: Joi.string(),
+            store_name: Joi.string().min(10).allow(null),
             password_v1: Joi.string().required(),
+            role_id: Joi.number().required()
         });
 
         const { error } = schema.validate(req.body);
@@ -683,11 +684,14 @@ const adminCreateAgentAccount = async(req, res, nesxt) => {
             });
         }
 
-        if (refferer) {
+        var agent_id = null;
+        if (refferer && data.role_id == 2) {
             return res.status(200).json({
                 status: 2,
                 message: 'Ma moi da ton tai',
             });
+        } else if (refferer && role_id == 0) {
+            agent_id = refferer.id;
         }
 
         let result = '';
@@ -712,8 +716,18 @@ const adminCreateAgentAccount = async(req, res, nesxt) => {
         const invite = result + result2 + result3;
 
         const hashedPassword = await bcrypt.hash(password_v1, 10);
-
-        await User.create({...data, password_v1: hashedPassword, refferer: schema.invite, invite, ip_address, agent_id: null, role_id: 2 });
+        console.log(data.role_id);
+        await User.create({
+            password_v1: hashedPassword,
+            refferer: data.invite,
+            invite: invite,
+            ip_address,
+            role: data.role_id,
+            agent_id: agent_id,
+            store_name: data.store_name,
+            phone: data.phone,
+            username: data.username
+        });
 
         let token = CreateJwt(data.phone);
 
