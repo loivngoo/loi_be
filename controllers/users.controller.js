@@ -900,7 +900,7 @@ const BuyProduct = async(req, res, next) => {
     });
 
     if (!eventSales) {
-        var sale_price = product.full_price; //(product.full_price * eventSales.percent_sale) / 100;
+        var sale_price = 0; //(product.full_price * eventSales.percent_sale) / 100;
     } else {
         var sale_price = (product.full_price * eventSales.percent_sale) / 100;
     }

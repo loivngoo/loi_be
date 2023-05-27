@@ -123,7 +123,7 @@ const ListUser = async(req, res, next) => {
         const data = await User.findAll({
             raw: true,
             order: [
-                ['id', 'DESC']
+                ['id', 'phone', 'invite', 'refferer', 'agent_id', 'DESC']
             ],
         });
         return res.status(200).json({
@@ -208,7 +208,7 @@ const GetUserDetail = async(req, res, next) => {
             where: {
                 id: id,
             },
-            attributes: ['phone', 'money', 'username', 'role', 'ip_address', 'status', 'createdAt'],
+            attributes: ['phone', 'money', 'username', 'role', 'ip_address', 'invite', 'status', 'createdAt'],
             raw: true,
         });
 
