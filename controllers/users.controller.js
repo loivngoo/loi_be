@@ -827,7 +827,7 @@ const GetProducsInType = async(req, res, next) => {
 
         if (eventSales) {
             products.forEach(prod => {
-                prod.sale_price = (prod.full_price * eventSales.percent_sale) / 100;
+                prod.sale_price = prod.full_price - ((prod.full_price * eventSales.percent_sale) / 100);
                 prod.percent_sale = eventSales.percent_sale;
                 prod.image_path = process.env.APP_PATH + "/images/" + prod.image_path;
             });
