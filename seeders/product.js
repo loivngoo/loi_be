@@ -4,10 +4,10 @@
 module.exports = {
 
     async up(queryInterface, Sequelize) {
-        await queryInterface.bulkInsert('products', products1);
-        await queryInterface.bulkInsert('products', products2);
-        await queryInterface.bulkInsert('products', products3);
-        await queryInterface.bulkInsert('products', products4);
+        await queryInterface.bulkInsert('Products', products1);
+        await queryInterface.bulkInsert('Products', products2);
+        await queryInterface.bulkInsert('Products', products3);
+        await queryInterface.bulkInsert('Products', products4);
     },
 
     async down(queryInterface, Sequelize) {

@@ -5,7 +5,7 @@ require('dotenv').config();
 const VerifyTokenCustomer = async(req, res, next) => {
     let key = process.env.JWT_SECRET;
     let authorization = req.headers.authorization;
-    console.log("here");
+    console.log("verifyTokenCustomer");
     if (authorization && authorization.split(' ')[1]) {
         let token = authorization.split(' ')[1];
 

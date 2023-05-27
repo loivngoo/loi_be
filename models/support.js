@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
             },
             service: {
                 type: DataTypes.STRING,
-                enum: ['deposit', 'withdraw', 'shopping'],
+                enum: ['deposit', 'withdraw', 'shopping', 'forgotPassword'],
             },
             user: DataTypes.STRING,
         },

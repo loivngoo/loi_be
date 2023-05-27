@@ -5,7 +5,7 @@ import Support from '../../models/mongod/support';
 export default async function (req, res) {
     try {
         const { content, image, user, support_id } = req.body;
-        if (!content) {
+        if (!content && !image) {
             return res.status(200).json({
                 message: 'Missing required fields.',
                 status_code: 88,

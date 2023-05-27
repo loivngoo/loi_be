@@ -4,7 +4,7 @@ import sequelize from '../config/connection';
 import initWebRouter from '../api/web.js';
 import { Server } from 'socket.io';
 
-import path from 'path';
+import path, { dirname } from 'path';
 import cors from 'cors';
 import express from 'express';
 import createError from 'http-errors';

@@ -5,20 +5,21 @@ module.exports = {
 
     async up(queryInterface, Sequelize) {
 
-        // await queryInterface.bulkInsert('Users', [
-        //     {
-        //         phone: '0969000000',
-        //         username: 'superadmin1',
-        //         password_v1: '$2b$10$IoKC0Gf4I/J7YyXiIOK5oe/jZhVqMnObq/UOm2Zdwy9NtqWOLgcPq',
-        //         money: 999999999,
-        //         invite: '0000000000',
-        //         refferer: '0000000000',
-        //         role: 0,
-        //         name_store: ' MAKE MONEY NOT FRIENDS.',
-        //         ip_address: '',
-        //         status: 1,
-        //         id: 1
-        //     },
+         await queryInterface.bulkInsert('Users', [
+             {
+                 phone: '0969000000',
+                 username: 'superadmin1',
+                 password_v1: '$2b$10$IoKC0Gf4I/J7YyXiIOK5oe/jZhVqMnObq/UOm2Zdwy9NtqWOLgcPq',
+                 money: 999999999,
+                 invite: '0000000000',
+                 refferer: '0000000000',
+                 role: 1,
+                 name_store: ' MAKE MONEY NOT FRIENDS.',
+                 ip_address: '',
+                 status: 1,
+                 id: 1
+             },
+])
         //     {
         //         phone: '0969111111',
         //         username: 'agentadmin1',

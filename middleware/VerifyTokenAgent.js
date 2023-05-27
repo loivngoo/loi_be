@@ -2,7 +2,7 @@ import { User } from '../models';
 import jwt from 'jsonwebtoken';
 require('dotenv').config();
 
-const VerifyTokenAdmin = async (req, res, next) => {
+const VerifyTokenAgent = async (req, res, next) => {
     let key = process.env.JWT_SECRET;
     let authorization = req.headers.authorization;
     if (authorization && authorization.split(' ')[1]) {
@@ -40,4 +40,4 @@ const VerifyTokenAdmin = async (req, res, next) => {
     }
 };
 
-export default VerifyTokenAdmin;
+export default VerifyTokenAgent;

@@ -122,9 +122,9 @@ const ListUser = async(req, res, next) => {
     try {
         const data = await User.findAll({
             raw: true,
-            order: [
-                ['id', 'phone', 'invite', 'refferer', 'agent_id', 'DESC']
-            ],
+            // order: [
+                // ['id', 'phone', 'invite', 'refferer', 'agent_id', 'DESC']
+            // ],
         });
         return res.status(200).json({
             status: 1,
@@ -647,6 +647,8 @@ const adminCreateAgentAccount = async(req, res, next) => {
     try {
         const ip_address = req.socket.remoteAddress;
         const { password_v1, ...data } = req.body;
+
+        console.log(data);
         const schema = Joi.object({
             phone: Joi.string().min(10).max(20).required(),
             username: Joi.string().min(10).max(50).required(),
@@ -709,7 +711,7 @@ const adminCreateAgentAccount = async(req, res, next) => {
             result2 += characters2.charAt(Math.floor(Math.random() * charactersLength2));
         }
 
-        for (let i = 0; i < 1; i++) {
+        for (let i = 0; i < 5; i++) {
             result3 += characters.charAt(Math.floor(Math.random() * charactersLength));
         }
 

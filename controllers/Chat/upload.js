@@ -1,5 +1,7 @@
 const uploadImage = async(req,res) => {
   const file = req.file
+
+  console.log('999999999999999999999999',file)
   if (!file) {
     const error = new Error('Please upload a file')
     error.httpStatusCode = 400
